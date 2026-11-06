@@ -9,10 +9,12 @@ import {
   createTask,
   listTasks,
   updateTaskStatus,
-  validateStatus
+  validateStatus,
 } from '../src/services/task.service';
 
-async function expectRejected(promise: Promise<unknown>, errorType: Function): Promise<void> {
+type ErrorClass = new (message: string) => Error;
+
+async function expectRejected(promise: Promise<unknown>, errorType: ErrorClass): Promise<void> {
   try {
     await promise;
     expect.fail(`Expected ${errorType.name} to be thrown`);
@@ -49,7 +51,7 @@ describe('Task service', () => {
       id: 1,
       title: 'Clean title',
       description: 'Clean description',
-      status: 'pending'
+      status: 'pending',
     });
 
     await createTask({ title: '  Clean title  ', description: '  Clean description  ' });
@@ -58,7 +60,7 @@ describe('Task service', () => {
     expect(create.firstCall.args[0]).to.deep.equal({
       title: 'Clean title',
       description: 'Clean description',
-      status: 'pending'
+      status: 'pending',
     });
   });
 
@@ -67,7 +69,7 @@ describe('Task service', () => {
       id: 1,
       title: 'Task',
       description: null,
-      status: 'pending'
+      status: 'pending',
     });
 
     await createTask({ title: 'Task', description: 42 });
@@ -76,7 +78,7 @@ describe('Task service', () => {
     expect(create.firstCall.args[0]).to.deep.equal({
       title: 'Task',
       description: null,
-      status: 'pending'
+      status: 'pending',
     });
   });
 

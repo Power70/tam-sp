@@ -26,14 +26,17 @@ export class ApiError extends Error {
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const response = await fetch(`${API_URL}${path}`, {
     headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-    ...options
+    ...options,
   });
   const contentType = response.headers.get('content-type') || '';
   const payload = contentType.includes('application/json')
-    ? await response.json() as { error?: string } & T
+    ? ((await response.json()) as { error?: string } & T)
     : undefined;
   if (!response.ok) {
-    throw new ApiError(payload?.error || `Request failed with status ${response.status}.`, response.status);
+    throw new ApiError(
+      payload?.error || `Request failed with status ${response.status}.`,
+      response.status
+    );
   }
   return payload as T;
 }
@@ -41,9 +44,11 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 export const taskApi = {
   list: (status: TaskStatus | '' = '') =>
     request<Task[]>(`/tasks${status ? `?status=${encodeURIComponent(status)}` : ''}`),
-  create: (task: NewTask) => request<Task>('/tasks', { method: 'POST', body: JSON.stringify(task) }),
-  updateStatus: (id: number, status: TaskStatus) => request<Task>(`/tasks/${id}/status`, {
-    method: 'PATCH',
-    body: JSON.stringify({ status })
-  })
+  create: (task: NewTask) =>
+    request<Task>('/tasks', { method: 'POST', body: JSON.stringify(task) }),
+  updateStatus: (id: number, status: TaskStatus) =>
+    request<Task>(`/tasks/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    }),
 };

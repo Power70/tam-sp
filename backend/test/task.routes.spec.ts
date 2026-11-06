@@ -48,7 +48,9 @@ describe('Task routes integration', () => {
 
   it('filters tasks by each supported status', async () => {
     for (const status of ['pending', 'in_progress', 'completed']) {
-      await request(app).post('/api/tasks').send({ title: `${status} task`, status });
+      await request(app)
+        .post('/api/tasks')
+        .send({ title: `${status} task`, status });
     }
 
     for (const status of ['pending', 'in_progress', 'completed']) {
@@ -66,7 +68,9 @@ describe('Task routes integration', () => {
   });
 
   it('rejects titles over the database and service limit', async () => {
-    const response = await request(app).post('/api/tasks').send({ title: 'x'.repeat(201) });
+    const response = await request(app)
+      .post('/api/tasks')
+      .send({ title: 'x'.repeat(201) });
     expect(response.status).to.equal(400);
   });
 
@@ -81,7 +85,9 @@ describe('Task routes integration', () => {
   });
 
   it('returns 404 for a valid but missing task id', async () => {
-    const response = await request(app).patch('/api/tasks/999999/status').send({ status: 'completed' });
+    const response = await request(app)
+      .patch('/api/tasks/999999/status')
+      .send({ status: 'completed' });
     expect(response.status).to.equal(404);
   });
 
@@ -94,10 +100,10 @@ describe('Task routes integration', () => {
   it('enforces the database status constraint', async () => {
     let error: unknown;
     try {
-      await pool.query(
-        'INSERT INTO tasks (title, status) VALUES ($1, $2)',
-        ['invalid status', 'blocked']
-      );
+      await pool.query('INSERT INTO tasks (title, status) VALUES ($1, $2)', [
+        'invalid status',
+        'blocked',
+      ]);
     } catch (caught) {
       error = caught;
     }

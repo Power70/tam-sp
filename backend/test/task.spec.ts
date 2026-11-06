@@ -8,13 +8,17 @@ describe('Task routes', () => {
   afterEach(() => sinon.restore());
 
   beforeEach(() => {
-    sinon.stub(repository, 'findAll').resolves([{ id: 1, title: 'Write tests', status: 'pending' }]);
+    sinon
+      .stub(repository, 'findAll')
+      .resolves([{ id: 1, title: 'Write tests', status: 'pending' }]);
     sinon.stub(repository, 'create').callsFake(async (task) => ({
       id: 2,
       ...task,
       status: task.status ?? 'pending',
     }));
-    sinon.stub(repository, 'updateStatus').callsFake(async (id, status) => id === 2 ? { id: 2, title: 'Write tests', status } : null);
+    sinon
+      .stub(repository, 'updateStatus')
+      .callsFake(async (id, status) => (id === 2 ? { id: 2, title: 'Write tests', status } : null));
   });
 
   it('lists tasks and passes an optional status filter to the service', async () => {
@@ -34,18 +38,24 @@ describe('Task routes', () => {
   });
 
   it('rejects a title over 200 characters at the HTTP boundary', async () => {
-    const response = await request(app).post('/api/tasks').send({ title: 'x'.repeat(201) });
+    const response = await request(app)
+      .post('/api/tasks')
+      .send({ title: 'x'.repeat(201) });
     expect(response.status).to.equal(400);
   });
 
   it('rejects a non-string description', async () => {
-    const response = await request(app).post('/api/tasks').send({ title: 'Task', description: 123 });
+    const response = await request(app)
+      .post('/api/tasks')
+      .send({ title: 'Task', description: 123 });
     expect(response.status).to.equal(400);
     expect(response.body.error).to.equal('Description must be a string.');
   });
 
   it('rejects an invalid create status at the HTTP boundary', async () => {
-    const response = await request(app).post('/api/tasks').send({ title: 'Task', status: 'blocked' });
+    const response = await request(app)
+      .post('/api/tasks')
+      .send({ title: 'Task', status: 'blocked' });
     expect(response.status).to.equal(400);
     expect(response.body.error).to.contain('pending');
   });
@@ -89,13 +99,17 @@ describe('Task routes', () => {
   });
 
   it('rejects a non-integer task id', async () => {
-    const response = await request(app).patch('/api/tasks/not-an-id/status').send({ status: 'completed' });
+    const response = await request(app)
+      .patch('/api/tasks/not-an-id/status')
+      .send({ status: 'completed' });
     expect(response.status).to.equal(400);
     expect(response.body.error).to.equal('Task id must be an integer.');
   });
 
   it('returns not found when the repository cannot update the task', async () => {
-    const response = await request(app).patch('/api/tasks/999/status').send({ status: 'completed' });
+    const response = await request(app)
+      .patch('/api/tasks/999/status')
+      .send({ status: 'completed' });
     expect(response.status).to.equal(404);
     expect(response.body.error).to.equal('Task not found.');
   });

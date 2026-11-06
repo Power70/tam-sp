@@ -33,8 +33,12 @@ export function validateCreateTask(req: Request, res: Response, next: NextFuncti
 }
 
 export function validateStatus(req: Request, res: Response, next: NextFunction): void {
-  if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body) ||
-      !isTaskStatus(req.body.status)) {
+  if (
+    !req.body ||
+    typeof req.body !== 'object' ||
+    Array.isArray(req.body) ||
+    !isTaskStatus(req.body.status)
+  ) {
     sendValidationError(res, `Status must be one of: ${TASK_STATUSES.join(', ')}.`);
     return;
   }

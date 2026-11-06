@@ -60,6 +60,15 @@ jobs:
       - name: Build backend
         run: npm run build
 
+      - name: Typecheck backend
+        run: npm run typecheck
+
+      - name: Lint backend
+        run: npm run lint
+
+      - name: Check backend formatting
+        run: npm run format:check
+
       - name: Run backend tests
         run: npm test
 
@@ -85,6 +94,12 @@ jobs:
 
       - name: Typecheck frontend
         run: npm run typecheck
+
+      - name: Lint frontend
+        run: npm run lint
+
+      - name: Check frontend formatting
+        run: npm run format:check
 
       - name: Build frontend
         run: npm run build

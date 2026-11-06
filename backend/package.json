@@ -6,6 +6,10 @@
   "main": "dist/server.js",
   "scripts": {
     "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --config ../.prettierrc.json --ignore-path ../.prettierignore --write .",
+    "format:check": "prettier --config ../.prettierrc.json --ignore-path ../.prettierignore --check .",
     "db:seed": "npm run build && node dist/src/scripts/seed.js",
     "db:setup": "npm run db:seed",
     "start": "node dist/server.js",
@@ -22,6 +26,7 @@
     "pg": "^8.13.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.17.0",
     "@types/chai": "^4.3.20",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
@@ -30,16 +35,18 @@
     "@types/pg": "^8.11.10",
     "@types/sinon": "^22.0.2",
     "@types/supertest": "^6.0.2",
+    "eslint": "^9.17.0",
     "chai": "^5.1.2",
     "mocha": "^12.0.3",
+    "prettier": "^3.4.2",
     "sinon": "^22.1.0",
     "supertest": "^7.0.0",
     "tsx": "^4.19.2",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.18.0"
   },
-    "overrides": {
+  "overrides": {
     "glob": "^14.0.2",
     "minimatch": "^11.0.1"
   }
 }
-

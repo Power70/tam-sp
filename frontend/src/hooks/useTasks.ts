@@ -23,7 +23,9 @@ export function useTasks(status: TaskStatus | '') {
     }
   }, [status]);
 
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   async function addTask(task: NewTask): Promise<void> {
     setSaving(true);

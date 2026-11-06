@@ -1,27 +1,11 @@
 import repository from '../repositories/task.repository';
 import { isTaskStatus, normalizeDescription, TASK_STATUSES } from '../domain/task';
 import type { CreateTaskInput, PersistedTaskInput, Task, TaskStatus } from '../domain/task';
+import { NotFoundError, ValidationError } from '../domain/errors';
 
 export { TASK_STATUSES as STATUSES };
 export type { CreateTaskInput, Task, TaskStatus };
-
-export class ValidationError extends Error {
-  statusCode = 400;
-
-  constructor(message: string) {
-    super(message);
-    this.name = 'ValidationError';
-  }
-}
-
-export class NotFoundError extends Error {
-  statusCode = 404;
-
-  constructor(message: string) {
-    super(message);
-    this.name = 'NotFoundError';
-  }
-}
+export { NotFoundError, ValidationError };
 
 function validateTitle(title: unknown): asserts title is string {
   if (typeof title !== 'string' || title.trim().length === 0 || title.trim().length > 200) {
@@ -52,7 +36,7 @@ export async function createTask(input: CreateTaskInput = {}): Promise<Task> {
   const task: PersistedTaskInput = {
     title: input.title.trim(),
     description: normalizeDescription(input.description),
-    status
+    status,
   };
   return repository.create(task);
 }

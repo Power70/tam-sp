@@ -8,5 +8,11 @@ interface TaskListProps {
 
 export default function TaskList({ tasks, onStatusChange }: TaskListProps) {
   if (!tasks.length) return <p>No tasks found.</p>;
-  return <ul>{tasks.map((task) => <TaskItem key={task.id} task={task} onStatusChange={onStatusChange} />)}</ul>;
+  return (
+    <ul>
+      {tasks.map((task) => (
+        <TaskItem key={task.id} task={task} onStatusChange={onStatusChange} />
+      ))}
+    </ul>
+  );
 }

@@ -55,3 +55,23 @@ npm test
 The integration tests create the schema from [`db/schema.sql`](./db/schema.sql) before running, so the local database does not need a separate manual schema step. CI provisions a PostgreSQL 16 service and runs the complete Mocha suite.
 
 The unit suite covers title and status validation, normalization, default values, missing records, repository failures, malformed JSON, invalid IDs, unknown routes, and request-body shape errors. The integration suite covers persistence, all supported status filters, status transitions, health checks, database constraints, invalid filters, boundary-length titles, missing records, and null/array request bodies.
+
+## Code quality
+
+Run these checks before opening a pull request:
+
+```sh
+cd backend
+npm run typecheck
+npm run lint
+npm run format:check
+npm test
+
+cd ../frontend
+npm run typecheck
+npm run lint
+npm run format:check
+npm run build
+```
+
+Formatting uses the shared root [`.prettierrc.json`](./.prettierrc.json) configuration. Task domain types, status values, and input normalization are centralized in [`backend/src/domain/task.ts`](./backend/src/domain/task.ts) to keep service, repository, and middleware logic consistent.

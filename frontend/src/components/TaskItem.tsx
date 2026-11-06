@@ -15,10 +15,19 @@ export default function TaskItem({ task, onStatusChange }: TaskItemProps) {
     }
   }
 
-  return <li>
-    <div><strong>{task.title}</strong>{task.description && <p>{task.description}</p>}</div>
-    <select value={task.status} onChange={handleStatusChange}>
-      {TASK_STATUSES.map((status) => <option key={status} value={status}>{status.replace('_', ' ')}</option>)}
-    </select>
-  </li>;
+  return (
+    <li>
+      <div>
+        <strong>{task.title}</strong>
+        {task.description && <p>{task.description}</p>}
+      </div>
+      <select value={task.status} onChange={handleStatusChange}>
+        {TASK_STATUSES.map((status) => (
+          <option key={status} value={status}>
+            {status.replace('_', ' ')}
+          </option>
+        ))}
+      </select>
+    </li>
+  );
 }
