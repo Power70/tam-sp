@@ -1,0 +1,8 @@
+:root { font-family: system-ui, sans-serif; color: #173b2f; background: #f3f8f4; }
+main { max-width: 720px; margin: 3rem auto; padding: 0 1rem; }
+form { display: grid; gap: .75rem; margin-bottom: 1.5rem; }
+input, select, button { padding: .6rem; font: inherit; }
+button { cursor: pointer; background: #25734d; color: white; border: 0; border-radius: .25rem; }
+ul { list-style: none; padding: 0; }
+li { display: flex; justify-content: space-between; gap: 1rem; background: white; padding: 1rem; margin: .5rem 0; border-radius: .4rem; }
+p { color: #48665a; }
