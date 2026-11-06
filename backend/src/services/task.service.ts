@@ -54,8 +54,11 @@ export async function createTask(input: {
   status?: unknown;
 } = {}): Promise<Task> {
   validateTitle(input.title);
-  const status = input.status || 'pending';
-  if (input.status) validateStatus(input.status);
+  let status: TaskStatus = 'pending';
+  if ('status' in input) {
+    validateStatus(input.status);
+    status = input.status;
+  }
   return repository.create({
     title: input.title.trim(),
     description: typeof input.description === 'string' ? input.description.trim() : null,

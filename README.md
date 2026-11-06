@@ -44,3 +44,5 @@ npm test
 ```
 
 The integration tests require the configured PostgreSQL database and schema. CI provisions a PostgreSQL 16 service, applies [`db/schema.sql`](./db/schema.sql), and runs the complete Mocha suite.
+
+The unit suite covers title and status validation, normalization, default values, missing records, repository failures, malformed JSON, invalid IDs, unknown routes, and request-body shape errors. The integration suite covers persistence, all supported status filters, status transitions, health checks, database constraints, invalid filters, boundary-length titles, missing records, and null/array request bodies.

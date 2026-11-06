@@ -8,6 +8,10 @@ describe('Task routes integration', () => {
     await pool.query('DELETE FROM tasks');
   });
 
+  beforeEach(async () => {
+    await pool.query('DELETE FROM tasks');
+  });
+
   after(async () => {
     await pool.query('DELETE FROM tasks');
     await pool.end();
@@ -38,5 +42,63 @@ describe('Task routes integration', () => {
 
     expect(updateResponse.status).to.equal(200);
     expect(updateResponse.body.status).to.equal('completed');
+  });
+
+  it('filters tasks by each supported status', async () => {
+    for (const status of ['pending', 'in_progress', 'completed']) {
+      await request(app).post('/api/tasks').send({ title: `${status} task`, status });
+    }
+
+    for (const status of ['pending', 'in_progress', 'completed']) {
+      const response = await request(app).get(`/api/tasks?status=${status}`);
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.length(1);
+      expect(response.body[0].status).to.equal(status);
+    }
+  });
+
+  it('rejects an invalid status filter', async () => {
+    const response = await request(app).get('/api/tasks?status=blocked');
+    expect(response.status).to.equal(400);
+    expect(response.body.error).to.contain('pending');
+  });
+
+  it('rejects titles over the database and service limit', async () => {
+    const response = await request(app).post('/api/tasks').send({ title: 'x'.repeat(201) });
+    expect(response.status).to.equal(400);
+  });
+
+  it('rejects a null or array request body', async () => {
+    const nullResponse = await request(app)
+      .post('/api/tasks')
+      .set('Content-Type', 'application/json')
+      .send('null');
+    const arrayResponse = await request(app).post('/api/tasks').send([]);
+    expect(nullResponse.status).to.equal(400);
+    expect(arrayResponse.status).to.equal(400);
+  });
+
+  it('returns 404 for a valid but missing task id', async () => {
+    const response = await request(app).patch('/api/tasks/999999/status').send({ status: 'completed' });
+    expect(response.status).to.equal(404);
+  });
+
+  it('exposes a healthy database status', async () => {
+    const response = await request(app).get('/health');
+    expect(response.status).to.equal(200);
+    expect(response.body).to.deep.equal({ status: 'ok', database: 'ok' });
+  });
+
+  it('enforces the database status constraint', async () => {
+    let error: unknown;
+    try {
+      await pool.query(
+        'INSERT INTO tasks (title, status) VALUES ($1, $2)',
+        ['invalid status', 'blocked']
+      );
+    } catch (caught) {
+      error = caught;
+    }
+    expect(error).to.be.instanceOf(Error);
   });
 });
