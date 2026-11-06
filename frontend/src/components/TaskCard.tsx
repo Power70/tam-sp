@@ -1,12 +1,10 @@
-import { useState } from 'react';
-import DOMPurify from 'dompurify';
-import { STATUS_LABELS, TASK_STATUSES, type Task, type TaskStatus } from '../api/taskApi';
+import type { Task } from '../api/taskApi';
 import StatusBadge from './StatusBadge';
 
 interface TaskCardProps {
   task: Task;
-  updating: boolean;
-  onStatusChange: (id: number, status: TaskStatus) => Promise<void>;
+  selected: boolean;
+  onSelect: (id: number) => void;
 }
 
 function formatCreatedAt(value?: string): string {
@@ -16,60 +14,26 @@ function formatCreatedAt(value?: string): string {
   );
 }
 
-function sanitizeDescription(value: string): string {
-  const clean = DOMPurify.sanitize(value);
-  const container = document.createElement('div');
-  container.innerHTML = clean;
-  container.querySelectorAll('a').forEach((link) => {
-    link.setAttribute('target', '_blank');
-    link.setAttribute('rel', 'noopener noreferrer');
-  });
-  return container.innerHTML;
-}
-
-export default function TaskCard({ task, updating, onStatusChange }: TaskCardProps) {
-  const [expanded, setExpanded] = useState(false);
-  const description = task.description ? sanitizeDescription(task.description) : '';
-
+export default function TaskCard({ task, selected, onSelect }: TaskCardProps) {
   return (
-    <article
-      className={`cursor-pointer rounded-xl border border-gray-200 bg-white p-4 shadow-sm ${expanded ? 'expanded' : ''}`}
-      onClick={() => setExpanded((current) => !current)}
+    <button
+      type="button"
+      className={`grid w-full grid-cols-[minmax(0,1fr)_auto_auto] grid-rows-2 items-center gap-x-3 gap-y-1 rounded-xl border bg-white px-4 py-4 text-left text-gray-900 shadow-sm transition hover:border-gray-300 ${
+        selected ? 'border-teal-700 bg-teal-50' : 'border-gray-200'
+      }`}
+      aria-haspopup="dialog"
+      onClick={() => onSelect(task.id)}
     >
-      <div className="flex items-start justify-between gap-4">
-        <h3 className="m-0 text-lg font-semibold leading-7">{task.title}</h3>
+      <span className="truncate text-[17px] font-semibold leading-6">{task.title}</span>
+      <span className="row-span-2 text-2xl font-light text-gray-400" aria-hidden="true">
+        ›
+      </span>
+      <span className="col-start-1 row-start-2 text-sm text-gray-500">
+        Created {formatCreatedAt(task.created_at)}
+      </span>
+      <span className="col-start-2 row-span-2">
         <StatusBadge status={task.status} />
-      </div>
-      {description ? (
-        <div
-          className={`task-description my-4 overflow-hidden text-base leading-7 text-gray-600 ${expanded ? '' : 'line-clamp-4'}`}
-          dangerouslySetInnerHTML={{ __html: description }}
-          onClick={(event) => event.stopPropagation()}
-        />
-      ) : (
-        <p className="my-4 text-base text-gray-500">No description provided.</p>
-      )}
-      <div
-        className="flex items-center justify-between gap-3 border-t border-gray-200 pt-3"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <time className="text-sm text-gray-500" dateTime={task.created_at}>
-          Created {formatCreatedAt(task.created_at)}
-        </time>
-        <select
-          className="min-h-11 rounded-lg border border-gray-300 bg-white px-3 text-base text-gray-700 disabled:cursor-wait disabled:opacity-60"
-          aria-label={`Status for ${task.title}`}
-          value={task.status}
-          disabled={updating}
-          onChange={(event) => void onStatusChange(task.id, event.target.value as TaskStatus)}
-        >
-          {TASK_STATUSES.map((status) => (
-            <option key={status} value={status}>
-              {STATUS_LABELS[status]}
-            </option>
-          ))}
-        </select>
-      </div>
-    </article>
+      </span>
+    </button>
   );
 }

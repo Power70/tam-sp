@@ -25,22 +25,104 @@ select:focus-visible,
   outline-offset: 2px;
 }
 
-.ProseMirror {
+.tiptap-editor .tiptap {
+  box-sizing: border-box;
   min-height: 120px;
-  padding: 10px;
+  max-height: 320px;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+  padding: 10px 12px;
+  line-height: 1.5;
+  outline: none;
+  white-space: pre-wrap;
 }
 
-.ProseMirror p.is-editor-empty:first-child::before {
+.tiptap-editor .tiptap h1 {
+  margin: 20px 0 12px;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.tiptap-editor .tiptap h2 {
+  margin: 16px 0 8px;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.tiptap-editor .tiptap h3 {
+  margin: 12px 0 8px;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.tiptap-editor .tiptap h4 {
+  margin: 12px 0 8px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.tiptap-editor .tiptap p {
+  margin: 0 0 8px;
+}
+
+.tiptap-editor .tiptap p:last-child {
+  margin-bottom: 0;
+}
+
+.tiptap-editor .tiptap ul,
+.tiptap-editor .tiptap ol {
+  margin: 8px 0;
+  padding-left: 24px;
+}
+
+.tiptap-editor .tiptap ul {
+  list-style: disc;
+}
+
+.tiptap-editor .tiptap ol {
+  list-style: decimal;
+}
+
+.tiptap-editor .tiptap li {
+  padding-left: 4px;
+}
+
+.tiptap-editor .tiptap blockquote {
+  margin: 12px 0;
+  border-left: 4px solid #d1d5db;
+  padding-left: 16px;
+  font-style: italic;
+}
+
+.tiptap-editor .tiptap hr {
+  margin: 16px 0;
+  border: 0;
+  border-top: 1px solid #e5e7eb;
+}
+
+.tiptap-editor .tiptap a {
+  overflow-wrap: anywhere;
+  color: #0f766e;
+  text-decoration: underline;
+}
+
+.tiptap-editor .tiptap strong {
+  font-weight: 700;
+}
+
+.tiptap-editor .tiptap em {
+  font-style: italic;
+}
+
+.tiptap-editor .tiptap p.is-editor-empty:first-child::before {
   float: left;
   height: 0;
   color: #6b7280;
   content: attr(data-placeholder);
   pointer-events: none;
-}
-
-.ProseMirror ul,
-.ProseMirror ol {
-  padding-left: 20px;
 }
 
 .task-description p {

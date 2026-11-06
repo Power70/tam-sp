@@ -3,6 +3,12 @@ import { taskApi, type NewTask, type Task, type TaskStatus } from '../api/taskAp
 
 export const PAGE_SIZE = 10;
 
+export interface TaskError {
+  scope: 'load' | 'update';
+  message: string;
+  retry: () => void;
+}
+
 function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'Request failed.';
 }
@@ -12,15 +18,19 @@ export function useTasks(status: TaskStatus | '') {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<TaskError | null>(null);
 
   const refresh = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       setAllTasks(await taskApi.list());
-      setError('');
     } catch (requestError) {
-      setError(getErrorMessage(requestError));
+      setError({
+        scope: 'load',
+        message: getErrorMessage(requestError),
+        retry: () => void refresh(),
+      });
     } finally {
       setLoading(false);
     }
@@ -55,10 +65,7 @@ export function useTasks(status: TaskStatus | '') {
     try {
       const created = await taskApi.create(task);
       setAllTasks((current) => [created, ...current]);
-      setError('');
-    } catch (requestError) {
-      setError(getErrorMessage(requestError));
-      throw requestError;
+      setError(null);
     } finally {
       setSaving(false);
     }
@@ -66,13 +73,16 @@ export function useTasks(status: TaskStatus | '') {
 
   async function updateStatus(id: number, nextStatus: TaskStatus): Promise<void> {
     setSaving(true);
+    setError(null);
     try {
       const updated = await taskApi.updateStatus(id, nextStatus);
       setAllTasks((current) => current.map((task) => (task.id === id ? updated : task)));
-      setError('');
-    } catch (requestError) {
-      setError('Could not update the task. Please try again.');
-      throw requestError;
+    } catch {
+      setError({
+        scope: 'update',
+        message: 'Could not update the task. Please try again.',
+        retry: () => void updateStatus(id, nextStatus),
+      });
     } finally {
       setSaving(false);
     }
@@ -85,6 +95,7 @@ export function useTasks(status: TaskStatus | '') {
 
   return {
     tasks,
+    allTasks,
     counts,
     page,
     total: filteredTasks.length,

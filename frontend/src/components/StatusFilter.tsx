@@ -18,23 +18,23 @@ export default function StatusFilter({ value, counts, onChange }: StatusFilterPr
 
   return (
     <div
-      className="mb-4 flex gap-2 overflow-x-auto pb-1"
+      className="mb-5 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible [&::-webkit-scrollbar]:hidden"
       aria-label="Filter tasks by status"
       role="group"
     >
       {filters.map((filter) => (
         <button
-          className={`min-h-11 shrink-0 rounded-lg border px-4 text-base ${
+          className={`h-10 shrink-0 whitespace-nowrap rounded-lg border px-3.5 text-sm ${
             value === filter.value
-              ? 'border-teal-700 bg-teal-50 font-semibold text-teal-800'
-              : 'border-gray-200 bg-white text-gray-700'
+              ? 'border-teal-700 bg-teal-100 font-semibold text-teal-800'
+              : 'border-gray-300 bg-white font-medium text-gray-700 hover:bg-gray-50'
           }`}
           key={filter.value || 'all'}
           type="button"
           onClick={() => onChange(filter.value)}
           aria-pressed={value === filter.value}
         >
-          {filter.label} {filter.count}
+          {filter.label} <span>{filter.count}</span>
         </button>
       ))}
     </div>
