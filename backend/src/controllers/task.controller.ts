@@ -24,6 +24,7 @@ export async function updateStatus(req: Request, res: Response, next: NextFuncti
       res.status(400).json({ error: 'Task id must be an integer.' });
       return;
     }
+
     res.json(await service.updateTaskStatus(id, req.body.status));
   } catch (error) {
     next(error);
