@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS tasks (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks (status);
+
 INSERT INTO tasks (title, description, status)
 SELECT 'Welcome to Sprout', 'Create your first task to get started.', 'pending'
 WHERE NOT EXISTS (SELECT 1 FROM tasks);

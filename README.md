@@ -11,7 +11,7 @@ A small task manager with a React/Vite frontend, Express API, and PostgreSQL per
 
 1. Create a database named `sprout_tasks`.
 2. Apply [`db/schema.sql`](./db/schema.sql).
-3. Copy [`backend/.env.example`](./backend/.env.example) to `backend/.env` and update `DATABASE_URL`.
+3. Copy [`backend/.env.example`](./backend/.env.example) to `backend/.env` and update `DATABASE_URL`. `PORT`, `NODE_ENV`, `DATABASE_URL`, and `FRONTEND_URL` are required when starting the server.
 4. Install and start the API:
 
    ```sh
@@ -32,15 +32,15 @@ Open `http://localhost:5173`.
 
 ## Architecture
 
-The backend keeps HTTP concerns in controllers, business validation in services, and parameterized SQL in repositories. `src/app.js` exports the Express application without starting a listener, which keeps route tests isolated and makes deployment wiring explicit. The frontend centralizes API calls in `taskApi.js` and uses `useTasks` for loading, filtering, and mutation state.
+The backend keeps HTTP concerns in controllers, business validation in services, and parameterized SQL in repositories. `src/app.ts` exports the Express application without starting a listener, which keeps route tests isolated and makes deployment wiring explicit. The frontend centralizes API calls in `taskApi.ts` and uses `useTasks.ts` for loading, filtering, and mutation state. TypeScript source is compiled to `backend/dist` for production execution.
 
 ## Testing
 
-Run the backend route and service-facing tests with:
+Run the backend unit and PostgreSQL integration tests with:
 
 ```sh
 cd backend
 npm test
 ```
 
-The current tests stub repository calls, so they do not require a running PostgreSQL instance.
+The integration tests require the configured PostgreSQL database and schema. CI provisions a PostgreSQL 16 service, applies [`db/schema.sql`](./db/schema.sql), and runs the complete Mocha suite.

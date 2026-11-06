@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "description": "REST API for Sprout Task Manager",
-  "main": "server.js",
+  "main": "dist/server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js",
-    "test": "mocha \"test/**/*.spec.js\" --exit"
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "tsx watch server.ts",
+    "test": "tsx ./node_modules/mocha/bin/mocha.js \"test/**/*.spec.ts\" --exit"
   },
   "engines": {
     "node": ">=20"
@@ -19,8 +20,18 @@
     "pg": "^8.13.1"
   },
   "devDependencies": {
+    "@types/chai": "^4.3.20",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.9.0",
+    "@types/pg": "^8.11.10",
+    "@types/supertest": "^6.0.2",
     "chai": "^5.1.2",
     "mocha": "^11.0.1",
-    "supertest": "^7.0.0"
+    "sinon": "^19.0.2",
+    "supertest": "^7.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
   }
 }

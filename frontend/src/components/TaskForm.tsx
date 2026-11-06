@@ -1,10 +1,16 @@
 import { useState } from 'react';
+import type { FormEvent } from 'react';
+import type { NewTask } from '../api/taskApi';
 
-export default function TaskForm({ onSubmit }) {
+interface TaskFormProps {
+  onSubmit: (task: NewTask) => Promise<void>;
+}
+
+export default function TaskForm({ onSubmit }: TaskFormProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
-  async function handleSubmit(event) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     if (!title.trim()) return;
     await onSubmit({ title, description });

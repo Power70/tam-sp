@@ -1,13 +1,16 @@
-const { expect } = require('chai');
-const request = require('supertest');
-const app = require('../src/app');
-const repository = require('../src/repositories/task.repository');
+import { expect } from 'chai';
+import sinon from 'sinon';
+import request from 'supertest';
+import app from '../src/app';
+import repository from '../src/repositories/task.repository';
 
 describe('Task routes', () => {
+  afterEach(() => sinon.restore());
+
   beforeEach(() => {
-    repository.findAll = async () => [{ id: 1, title: 'Write tests', status: 'pending' }];
-    repository.create = async (task) => ({ id: 2, ...task });
-    repository.updateStatus = async (id, status) => id === '2' ? { id: 2, title: 'Write tests', status } : null;
+    sinon.stub(repository, 'findAll').resolves([{ id: 1, title: 'Write tests', status: 'pending' }]);
+    sinon.stub(repository, 'create').callsFake(async (task) => ({ id: 2, ...task }));
+    sinon.stub(repository, 'updateStatus').callsFake(async (id, status) => id === 2 ? { id: 2, title: 'Write tests', status } : null);
   });
 
   it('lists tasks', async () => {

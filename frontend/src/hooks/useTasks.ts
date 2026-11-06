@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
-import { taskApi } from '../api/taskApi';
+import { taskApi, type NewTask, type Task, type TaskStatus } from '../api/taskApi';
 
-export function useTasks(status) {
-  const [tasks, setTasks] = useState([]);
+export function useTasks(status: TaskStatus | '') {
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -12,7 +12,7 @@ export function useTasks(status) {
       setTasks(await taskApi.list(status));
       setError('');
     } catch (err) {
-      setError(err.message);
+      setError(err instanceof Error ? err.message : 'Request failed.');
     } finally {
       setLoading(false);
     }
@@ -20,12 +20,12 @@ export function useTasks(status) {
 
   useEffect(() => { refresh(); }, [refresh]);
 
-  async function addTask(task) {
+  async function addTask(task: NewTask): Promise<void> {
     await taskApi.create(task);
     await refresh();
   }
 
-  async function updateStatus(id, nextStatus) {
+  async function updateStatus(id: number, nextStatus: TaskStatus): Promise<void> {
     await taskApi.updateStatus(id, nextStatus);
     await refresh();
   }
