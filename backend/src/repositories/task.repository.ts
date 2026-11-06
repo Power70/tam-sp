@@ -1,5 +1,5 @@
 import { pool } from '../config/db';
-import type { Task, TaskStatus } from '../services/task.service';
+import type { PersistedTaskInput, Task, TaskStatus } from '../domain/task';
 
 const columns = 'id, title, description, status, created_at, updated_at';
 
@@ -20,11 +20,7 @@ export async function findById(id: number): Promise<Task | null> {
   return result.rows[0] || null;
 }
 
-export async function create({ title, description, status = 'pending' }: {
-  title: string;
-  description: string | null;
-  status?: TaskStatus;
-}): Promise<Task> {
+export async function create({ title, description, status }: PersistedTaskInput): Promise<Task> {
   const result = await pool.query(
     `INSERT INTO tasks (title, description, status)
      VALUES ($1, $2, $3)

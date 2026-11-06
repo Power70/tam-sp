@@ -1,15 +1,9 @@
 import repository from '../repositories/task.repository';
+import { isTaskStatus, normalizeDescription, TASK_STATUSES } from '../domain/task';
+import type { CreateTaskInput, PersistedTaskInput, Task, TaskStatus } from '../domain/task';
 
-export const STATUSES = ['pending', 'in_progress', 'completed'] as const;
-export type TaskStatus = typeof STATUSES[number];
-export interface Task {
-  id: number;
-  title: string;
-  description?: string | null;
-  status: TaskStatus;
-  created_at?: string;
-  updated_at?: string;
-}
+export { TASK_STATUSES as STATUSES };
+export type { CreateTaskInput, Task, TaskStatus };
 
 export class ValidationError extends Error {
   statusCode = 400;
@@ -36,34 +30,31 @@ function validateTitle(title: unknown): asserts title is string {
 }
 
 export function validateStatus(status: unknown): asserts status is TaskStatus {
-  if (!(STATUSES as readonly unknown[]).includes(status)) {
-    throw new ValidationError(`Status must be one of: ${STATUSES.join(', ')}.`);
+  if (!isTaskStatus(status)) {
+    throw new ValidationError(`Status must be one of: ${TASK_STATUSES.join(', ')}.`);
   }
 }
 
 export async function listTasks(status?: unknown): Promise<Task[]> {
-  if (status) {
+  if (status !== undefined) {
     validateStatus(status);
   }
-  return repository.findAll(status as TaskStatus | undefined);
+  return repository.findAll(status);
 }
 
-export async function createTask(input: {
-  title?: unknown;
-  description?: unknown;
-  status?: unknown;
-} = {}): Promise<Task> {
+export async function createTask(input: CreateTaskInput = {}): Promise<Task> {
   validateTitle(input.title);
   let status: TaskStatus = 'pending';
   if ('status' in input) {
     validateStatus(input.status);
     status = input.status;
   }
-  return repository.create({
+  const task: PersistedTaskInput = {
     title: input.title.trim(),
-    description: typeof input.description === 'string' ? input.description.trim() : null,
-    status: status as TaskStatus
-  });
+    description: normalizeDescription(input.description),
+    status
+  };
+  return repository.create(task);
 }
 
 export async function updateTaskStatus(id: number, status: TaskStatus): Promise<Task> {
