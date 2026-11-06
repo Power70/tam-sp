@@ -35,13 +35,14 @@ export default function RichTextEditor({ value, onChange, disabled = false }: Ri
 
   if (!editor)
     return (
-      <div className="editor-shell">
-        <div className="editor-content loading-editor" />
+      <div className="overflow-hidden rounded-lg border border-gray-300">
+        <div className="min-h-32 animate-pulse bg-gray-100" />
       </div>
     );
 
   const button = (label: string, active: boolean, action: () => void) => (
     <button
+      className="min-h-9 min-w-9 rounded-md px-2 text-xs text-gray-600 hover:bg-teal-50 disabled:opacity-50"
       type="button"
       aria-label={label}
       aria-pressed={active}
@@ -53,8 +54,8 @@ export default function RichTextEditor({ value, onChange, disabled = false }: Ri
   );
 
   return (
-    <div className="editor-shell">
-      <div className="editor-toolbar">
+    <div className="overflow-hidden rounded-lg border border-gray-300">
+      <div className="flex gap-1 border-b border-gray-200 bg-gray-50 p-1">
         {button('Bold', editor.isActive('bold'), () => editor.chain().focus().toggleBold().run())}
         {button('Italic', editor.isActive('italic'), () =>
           editor.chain().focus().toggleItalic().run()
@@ -73,7 +74,7 @@ export default function RichTextEditor({ value, onChange, disabled = false }: Ri
           editor.chain().focus().clearNodes().unsetAllMarks().run()
         )}
       </div>
-      <EditorContent editor={editor} className="editor-content" />
+      <EditorContent editor={editor} className="min-h-32 text-sm text-gray-600" />
     </div>
   );
 }

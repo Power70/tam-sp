@@ -17,10 +17,18 @@ export default function StatusFilter({ value, counts, onChange }: StatusFilterPr
   ];
 
   return (
-    <div className="status-filter" aria-label="Filter tasks by status" role="group">
+    <div
+      className="mb-4 flex gap-2 overflow-x-auto pb-1"
+      aria-label="Filter tasks by status"
+      role="group"
+    >
       {filters.map((filter) => (
         <button
-          className={value === filter.value ? 'filter-button selected' : 'filter-button'}
+          className={`min-h-10 shrink-0 rounded-lg border px-3 text-sm ${
+            value === filter.value
+              ? 'border-teal-700 bg-teal-50 font-semibold text-teal-800'
+              : 'border-gray-200 bg-white text-gray-700'
+          }`}
           key={filter.value || 'all'}
           type="button"
           onClick={() => onChange(filter.value)}

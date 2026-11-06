@@ -47,23 +47,29 @@ export default function TaskForm({
   if (!open) return null;
 
   return (
-    <div className="form-overlay" role="dialog" aria-modal="true" aria-label="New task">
-      <section className="task-form-card">
+    <div
+      className="fixed inset-0 z-10 flex items-end bg-gray-900/50 lg:static lg:block lg:bg-transparent"
+      role="dialog"
+      aria-modal="true"
+      aria-label="New task"
+    >
+      <section className="relative max-h-[92vh] w-full overflow-y-auto rounded-t-3xl bg-white p-8 lg:max-h-none lg:rounded-xl lg:border lg:border-gray-200 lg:p-5">
         <button
-          className="modal-close"
+          className="absolute right-6 top-4 text-3xl leading-none text-gray-600 lg:hidden"
           type="button"
           onClick={onClose}
           aria-label="Close new task form"
         >
           ×
         </button>
-        <h2>New task</h2>
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="task-title">
-            Title <span className="required">*</span>
+        <h2 className="mb-4 text-2xl font-bold lg:text-base">New task</h2>
+        <form className="grid gap-2" onSubmit={handleSubmit}>
+          <label className="mt-1 text-sm font-semibold" htmlFor="task-title">
+            Title <span className="text-red-600">*</span>
           </label>
           <input
             id="task-title"
+            className="min-h-10 w-full rounded-lg border border-gray-300 px-3"
             value={title}
             maxLength={150}
             onChange={(event) => {
@@ -73,14 +79,17 @@ export default function TaskForm({
             placeholder="e.g. Review pull request"
             disabled={submitting}
           />
-          {titleError && <span className="field-error">{titleError}</span>}
+          {titleError && <span className="text-xs text-red-700">{titleError}</span>}
 
-          <label>Description</label>
+          <label className="mt-1 text-sm font-semibold">Description</label>
           <RichTextEditor value={description} onChange={setDescription} disabled={submitting} />
 
-          <label htmlFor="task-status">Status</label>
+          <label className="mt-1 text-sm font-semibold" htmlFor="task-status">
+            Status
+          </label>
           <select
             id="task-status"
+            className="min-h-10 rounded-lg border border-gray-300 bg-white px-3"
             value={status}
             onChange={(event) => setStatus(event.target.value as TaskStatus)}
             disabled={submitting}
@@ -92,13 +101,17 @@ export default function TaskForm({
             ))}
           </select>
 
-          {formError && <p className="field-error">{formError}</p>}
+          {formError && <p className="m-0 text-xs text-red-700">{formError}</p>}
           {success && (
-            <p className="success-message" role="status">
+            <p className="m-0 text-xs text-green-700" role="status">
               {success}
             </p>
           )}
-          <button className="primary-button" type="submit" disabled={submitting}>
+          <button
+            className="mt-2 min-h-10 rounded-lg bg-teal-700 font-semibold text-white disabled:cursor-wait disabled:opacity-60"
+            type="submit"
+            disabled={submitting}
+          >
             {submitting ? 'Creating…' : 'Create task'}
           </button>
         </form>

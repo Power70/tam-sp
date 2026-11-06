@@ -33,25 +33,31 @@ export default function TaskCard({ task, updating, onStatusChange }: TaskCardPro
 
   return (
     <article
-      className={`task-card ${expanded ? 'expanded' : ''}`}
+      className={`cursor-pointer rounded-xl border border-gray-200 bg-white p-4 shadow-sm ${expanded ? 'expanded' : ''}`}
       onClick={() => setExpanded((current) => !current)}
     >
-      <div className="task-card-top">
-        <h3>{task.title}</h3>
+      <div className="flex items-start justify-between gap-4">
+        <h3 className="m-0 text-base font-semibold">{task.title}</h3>
         <StatusBadge status={task.status} />
       </div>
       {description ? (
         <div
-          className="task-description"
+          className={`task-description my-3 overflow-hidden text-sm leading-6 text-gray-600 ${expanded ? '' : 'line-clamp-4'}`}
           dangerouslySetInnerHTML={{ __html: description }}
           onClick={(event) => event.stopPropagation()}
         />
       ) : (
-        <p className="task-description muted">No description provided.</p>
+        <p className="my-3 text-sm text-gray-500">No description provided.</p>
       )}
-      <div className="task-card-footer" onClick={(event) => event.stopPropagation()}>
-        <time dateTime={task.created_at}>Created {formatCreatedAt(task.created_at)}</time>
+      <div
+        className="flex items-center justify-between gap-3 border-t border-gray-200 pt-3"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <time className="text-xs text-gray-500" dateTime={task.created_at}>
+          Created {formatCreatedAt(task.created_at)}
+        </time>
         <select
+          className="min-h-10 rounded-lg border border-gray-300 bg-white px-2 text-sm text-gray-700 disabled:cursor-wait disabled:opacity-60"
           aria-label={`Status for ${task.title}`}
           value={task.status}
           disabled={updating}

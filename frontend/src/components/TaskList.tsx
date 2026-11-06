@@ -12,7 +12,7 @@ interface TaskListProps {
 export default function TaskList({ tasks, loading, updating, onStatusChange }: TaskListProps) {
   if (loading) {
     return (
-      <div className="task-list">
+      <div className="grid gap-3">
         {[1, 2, 3].map((item) => (
           <SkeletonCard key={item} />
         ))}
@@ -21,13 +21,13 @@ export default function TaskList({ tasks, loading, updating, onStatusChange }: T
   }
   if (!tasks.length)
     return (
-      <div className="empty-state">
-        <h2>No tasks found</h2>
+      <div className="px-4 py-12 text-center text-gray-600">
+        <h2 className="mb-2 text-lg font-semibold text-gray-900">No tasks found</h2>
         <p>Try another filter or create a new task.</p>
       </div>
     );
   return (
-    <div className="task-list">
+    <div className="grid gap-3">
       {tasks.map((task) => (
         <TaskCard key={task.id} task={task} updating={updating} onStatusChange={onStatusChange} />
       ))}

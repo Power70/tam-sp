@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { PAGE_SIZE, useTasks } from './hooks/useTasks';
 import { type TaskStatus } from './api/taskApi';
 import ErrorBanner from './components/ErrorBanner';
@@ -25,34 +25,39 @@ export default function App() {
     changePage,
   } = useTasks(status);
 
-  useEffect(() => {
-    setFormOpen(false);
-  }, [status]);
-
   function changeFilter(nextStatus: TaskStatus | ''): void {
     setStatus(nextStatus);
-    changePage(1);
+    if (page !== 1) changePage(1);
   }
 
   return (
-    <div className="app-shell">
-      <header className="app-header">
-        <div className="brand">
-          <span className="logo" aria-hidden="true">
+    <div className="min-h-screen bg-[#f6f7f9]">
+      <header className="flex min-h-14 items-center border-b border-gray-200 bg-white px-5 sm:px-8">
+        <div className="flex items-center gap-2 text-base font-bold sm:text-lg">
+          <span
+            className="grid size-8 place-items-center rounded-lg bg-teal-700 text-white"
+            aria-hidden="true"
+          >
             ✓
           </span>
-          <strong>Sprout Task Manager</strong>
+          <span>Sprout Task Manager</span>
         </div>
-        <span className="total-count">{total} tasks</span>
-        <button className="mobile-new-button" type="button" onClick={() => setFormOpen(true)}>
+        <span className="ml-auto hidden text-xs text-gray-500 sm:block">{total} tasks</span>
+        <button
+          className="ml-auto min-h-10 rounded-lg bg-teal-700 px-4 font-semibold text-white sm:hidden"
+          type="button"
+          onClick={() => setFormOpen(true)}
+        >
           New task
         </button>
       </header>
-      <main className="content-grid">
-        <section className="tasks-section">
-          <div className="section-heading">
-            <h1>Tasks</h1>
-            <p>View, create and update the status of your tasks.</p>
+      <main className="mx-auto grid w-[calc(100%-2rem)] max-w-7xl gap-8 py-7 sm:w-[calc(100%-4rem)] sm:py-8 lg:grid-cols-[minmax(0,1fr)_340px]">
+        <section>
+          <div className="mb-4">
+            <h1 className="m-0 text-2xl font-bold">Tasks</h1>
+            <p className="mt-1 text-sm text-gray-600">
+              View, create and update the status of your tasks.
+            </p>
           </div>
           <StatusFilter value={status} counts={counts} onChange={changeFilter} />
           {error && <ErrorBanner message={error} onRetry={() => void refresh()} />}
@@ -70,11 +75,11 @@ export default function App() {
             onChange={changePage}
           />
         </section>
-        <aside className="desktop-form">
+        <aside className="hidden lg:block">
           <TaskForm onSubmit={addTask} submitting={saving} />
         </aside>
       </main>
-      <div className="mobile-form">
+      <div className="lg:hidden">
         <TaskForm
           onSubmit={addTask}
           submitting={saving}
