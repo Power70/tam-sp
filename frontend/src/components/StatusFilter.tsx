@@ -24,7 +24,7 @@ export default function StatusFilter({ value, counts, onChange }: StatusFilterPr
     >
       {filters.map((filter) => (
         <button
-          className={`min-h-10 shrink-0 rounded-lg border px-3 text-sm ${
+          className={`min-h-11 shrink-0 rounded-lg border px-4 text-base ${
             value === filter.value
               ? 'border-teal-700 bg-teal-50 font-semibold text-teal-800'
               : 'border-gray-200 bg-white text-gray-700'

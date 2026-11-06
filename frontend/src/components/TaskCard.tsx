@@ -37,27 +37,27 @@ export default function TaskCard({ task, updating, onStatusChange }: TaskCardPro
       onClick={() => setExpanded((current) => !current)}
     >
       <div className="flex items-start justify-between gap-4">
-        <h3 className="m-0 text-base font-semibold">{task.title}</h3>
+        <h3 className="m-0 text-lg font-semibold leading-7">{task.title}</h3>
         <StatusBadge status={task.status} />
       </div>
       {description ? (
         <div
-          className={`task-description my-3 overflow-hidden text-sm leading-6 text-gray-600 ${expanded ? '' : 'line-clamp-4'}`}
+          className={`task-description my-4 overflow-hidden text-base leading-7 text-gray-600 ${expanded ? '' : 'line-clamp-4'}`}
           dangerouslySetInnerHTML={{ __html: description }}
           onClick={(event) => event.stopPropagation()}
         />
       ) : (
-        <p className="my-3 text-sm text-gray-500">No description provided.</p>
+        <p className="my-4 text-base text-gray-500">No description provided.</p>
       )}
       <div
         className="flex items-center justify-between gap-3 border-t border-gray-200 pt-3"
         onClick={(event) => event.stopPropagation()}
       >
-        <time className="text-xs text-gray-500" dateTime={task.created_at}>
+        <time className="text-sm text-gray-500" dateTime={task.created_at}>
           Created {formatCreatedAt(task.created_at)}
         </time>
         <select
-          className="min-h-10 rounded-lg border border-gray-300 bg-white px-2 text-sm text-gray-700 disabled:cursor-wait disabled:opacity-60"
+          className="min-h-11 rounded-lg border border-gray-300 bg-white px-3 text-base text-gray-700 disabled:cursor-wait disabled:opacity-60"
           aria-label={`Status for ${task.title}`}
           value={task.status}
           disabled={updating}

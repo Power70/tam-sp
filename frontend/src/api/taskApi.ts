@@ -23,16 +23,6 @@ export interface NewTask {
   status: TaskStatus;
 }
 
-export interface TaskPage {
-  tasks: Task[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
-
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -64,28 +54,8 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return payload as T;
 }
 
-function toTaskPage(payload: TaskPage | Task[], page: number, limit: number): TaskPage {
-  if (Array.isArray(payload)) {
-    return {
-      tasks: payload,
-      pagination: {
-        page,
-        limit,
-        total: payload.length,
-        totalPages: Math.max(1, Math.ceil(payload.length / limit)),
-      },
-    };
-  }
-  return payload;
-}
-
 export const taskApi = {
-  list: async (page = 1, limit = 10, status: TaskStatus | '' = ''): Promise<TaskPage> => {
-    const params = new URLSearchParams({ page: String(page), limit: String(limit) });
-    if (status) params.set('status', status);
-    const payload = await request<TaskPage | Task[]>(`/tasks?${params.toString()}`);
-    return toTaskPage(payload, page, limit);
-  },
+  list: () => request<Task[]>('/tasks'),
   create: (task: NewTask) =>
     request<Task>('/tasks', { method: 'POST', body: JSON.stringify(task) }),
   updateStatus: (id: number, status: TaskStatus) =>

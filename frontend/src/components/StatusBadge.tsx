@@ -3,7 +3,7 @@ import { STATUS_LABELS, type TaskStatus } from '../api/taskApi';
 export default function StatusBadge({ status }: { status: TaskStatus }) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[11px] font-semibold ${
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-sm font-semibold ${
         status === 'pending'
           ? 'bg-amber-100 text-amber-800'
           : status === 'in_progress'

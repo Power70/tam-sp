@@ -8,9 +8,8 @@ function getErrorMessage(error: unknown): string {
 }
 
 export function useTasks(status: TaskStatus | '') {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [allTasks, setAllTasks] = useState<Task[]>([]);
   const [page, setPage] = useState(1);
-  const [pagination, setPagination] = useState({ total: 0, totalPages: 1 });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -18,34 +17,44 @@ export function useTasks(status: TaskStatus | '') {
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const result = await taskApi.list(page, PAGE_SIZE, status);
-      setTasks(result.tasks);
-      setPagination({
-        total: result.pagination.total,
-        totalPages: Math.max(1, result.pagination.totalPages),
-      });
+      setAllTasks(await taskApi.list());
       setError('');
     } catch (requestError) {
       setError(getErrorMessage(requestError));
     } finally {
       setLoading(false);
     }
-  }, [page, status]);
+  }, []);
 
   useEffect(() => {
     void refresh();
   }, [refresh]);
 
+  const filteredTasks = useMemo(
+    () => (status ? allTasks.filter((task) => task.status === status) : allTasks),
+    [allTasks, status]
+  );
+  const totalPages = Math.max(1, Math.ceil(filteredTasks.length / PAGE_SIZE));
+  const tasks = filteredTasks.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const counts = useMemo(
+    () => ({
+      all: allTasks.length,
+      pending: allTasks.filter((task) => task.status === 'pending').length,
+      in_progress: allTasks.filter((task) => task.status === 'in_progress').length,
+      completed: allTasks.filter((task) => task.status === 'completed').length,
+    }),
+    [allTasks]
+  );
+
   useEffect(() => {
-    if (page > pagination.totalPages) setPage(pagination.totalPages);
-  }, [page, pagination.totalPages]);
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
 
   async function addTask(task: NewTask): Promise<void> {
     setSaving(true);
     try {
       const created = await taskApi.create(task);
-      setTasks((current) => [created, ...current].slice(0, PAGE_SIZE));
-      setPagination((current) => ({ ...current, total: current.total + 1 }));
+      setAllTasks((current) => [created, ...current]);
       setError('');
     } catch (requestError) {
       setError(getErrorMessage(requestError));
@@ -59,7 +68,7 @@ export function useTasks(status: TaskStatus | '') {
     setSaving(true);
     try {
       const updated = await taskApi.updateStatus(id, nextStatus);
-      setTasks((current) => current.map((task) => (task.id === id ? updated : task)));
+      setAllTasks((current) => current.map((task) => (task.id === id ? updated : task)));
       setError('');
     } catch (requestError) {
       setError('Could not update the task. Please try again.');
@@ -70,29 +79,16 @@ export function useTasks(status: TaskStatus | '') {
   }
 
   function changePage(nextPage: number): void {
-    setPage(Math.max(1, Math.min(nextPage, pagination.totalPages)));
+    setPage(Math.max(1, Math.min(nextPage, totalPages)));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-
-  const counts = useMemo(() => {
-    const result: Record<TaskStatus | 'all', number> = {
-      all: pagination.total,
-      pending: 0,
-      in_progress: 0,
-      completed: 0,
-    };
-    tasks.forEach((task) => {
-      result[task.status] += 1;
-    });
-    return result;
-  }, [tasks, pagination.total]);
 
   return {
     tasks,
     counts,
     page,
-    total: pagination.total,
-    totalPages: pagination.totalPages,
+    total: filteredTasks.length,
+    totalPages,
     loading,
     saving,
     error,

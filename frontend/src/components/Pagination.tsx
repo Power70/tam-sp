@@ -15,7 +15,7 @@ export default function Pagination({
 }: PaginationProps) {
   if (totalPages <= 1)
     return (
-      <p className="text-xs text-gray-500">
+      <p className="text-sm text-gray-500">
         Showing {total ? 1 : 0}–{Math.min(total, pageSize)} of {total} tasks
       </p>
     );
@@ -23,11 +23,11 @@ export default function Pagination({
   const end = Math.min(page * pageSize, total);
   return (
     <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <p className="m-0 text-xs text-gray-500">
+      <p className="m-0 text-sm text-gray-500">
         Showing {start}–{end} of {total} tasks
       </p>
       <nav
-        className="flex items-center justify-between gap-4 text-sm text-gray-600 sm:justify-end"
+        className="flex items-center justify-between gap-4 text-base text-gray-600 sm:justify-end"
         aria-label="Task pagination"
       >
         {page > 1 ? (
