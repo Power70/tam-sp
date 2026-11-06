@@ -28,6 +28,28 @@ describe('Task routes', () => {
     expect(response.status).to.equal(400);
   });
 
+  it('rejects a title containing only whitespace', async () => {
+    const response = await request(app).post('/api/tasks').send({ title: '   ' });
+    expect(response.status).to.equal(400);
+  });
+
+  it('rejects a title over 200 characters at the HTTP boundary', async () => {
+    const response = await request(app).post('/api/tasks').send({ title: 'x'.repeat(201) });
+    expect(response.status).to.equal(400);
+  });
+
+  it('rejects a non-string description', async () => {
+    const response = await request(app).post('/api/tasks').send({ title: 'Task', description: 123 });
+    expect(response.status).to.equal(400);
+    expect(response.body.error).to.equal('Description must be a string.');
+  });
+
+  it('rejects an invalid create status at the HTTP boundary', async () => {
+    const response = await request(app).post('/api/tasks').send({ title: 'Task', status: 'blocked' });
+    expect(response.status).to.equal(400);
+    expect(response.body.error).to.contain('pending');
+  });
+
   it('rejects a request body that is not an object', async () => {
     const response = await request(app).post('/api/tasks').send([]);
     expect(response.status).to.equal(400);
@@ -51,6 +73,19 @@ describe('Task routes', () => {
     const response = await request(app).patch('/api/tasks/2/status').send({ status: 'blocked' });
     expect(response.status).to.equal(400);
     expect(response.body.error).to.contain('pending');
+  });
+
+  it('rejects an array status body', async () => {
+    const response = await request(app)
+      .patch('/api/tasks/2/status')
+      .set('Content-Type', 'application/json')
+      .send('[]');
+    expect(response.status).to.equal(400);
+  });
+
+  it('rejects a repeated status query parameter', async () => {
+    const response = await request(app).get('/api/tasks?status=pending&status=completed');
+    expect(response.status).to.equal(400);
   });
 
   it('rejects a non-integer task id', async () => {
