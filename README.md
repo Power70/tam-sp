@@ -10,7 +10,16 @@ A small task manager with a React/Vite frontend, Express API, and PostgreSQL per
 ## Setup
 
 1. Create a database named `sprout_tasks`.
-2. Apply [`db/schema.sql`](./db/schema.sql).
+2. Apply the schema and seed the initial data:
+
+   ```sh
+   cd backend
+   npm install
+   npm run db:seed
+   ```
+
+   The command is safe to run repeatedly; [`db/schema.sql`](./db/schema.sql) uses defensive DDL and idempotent seed data.
+
 3. Copy [`backend/.env.example`](./backend/.env.example) to `backend/.env` and update `DATABASE_URL`. `PORT`, `NODE_ENV`, `DATABASE_URL`, and `FRONTEND_URL` are required when starting the server.
 4. Install and start the API:
 
@@ -43,6 +52,6 @@ cd backend
 npm test
 ```
 
-The integration tests require the configured PostgreSQL database and schema. CI provisions a PostgreSQL 16 service, applies [`db/schema.sql`](./db/schema.sql), and runs the complete Mocha suite.
+The integration tests create the schema from [`db/schema.sql`](./db/schema.sql) before running, so the local database does not need a separate manual schema step. CI provisions a PostgreSQL 16 service and runs the complete Mocha suite.
 
 The unit suite covers title and status validation, normalization, default values, missing records, repository failures, malformed JSON, invalid IDs, unknown routes, and request-body shape errors. The integration suite covers persistence, all supported status filters, status transitions, health checks, database constraints, invalid filters, boundary-length titles, missing records, and null/array request bodies.

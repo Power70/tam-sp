@@ -2,9 +2,11 @@ import { expect } from 'chai';
 import request from 'supertest';
 import app from '../src/app';
 import { pool } from '../src/config/db';
+import { setupTestDatabase } from './fixtures/database';
 
 describe('Task routes integration', () => {
   before(async () => {
+    await setupTestDatabase();
     await pool.query('DELETE FROM tasks');
   });
 

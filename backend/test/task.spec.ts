@@ -9,7 +9,11 @@ describe('Task routes', () => {
 
   beforeEach(() => {
     sinon.stub(repository, 'findAll').resolves([{ id: 1, title: 'Write tests', status: 'pending' }]);
-    sinon.stub(repository, 'create').callsFake(async (task) => ({ id: 2, ...task }));
+    sinon.stub(repository, 'create').callsFake(async (task) => ({
+      id: 2,
+      ...task,
+      status: task.status ?? 'pending',
+    }));
     sinon.stub(repository, 'updateStatus').callsFake(async (id, status) => id === 2 ? { id: 2, title: 'Write tests', status } : null);
   });
 

@@ -5,7 +5,6 @@
     "moduleResolution": "Node",
     "rootDir": ".",
     "outDir": "dist",
-    "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,
     "types": ["node"],

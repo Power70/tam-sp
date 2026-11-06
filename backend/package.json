@@ -6,6 +6,8 @@
   "main": "dist/server.js",
   "scripts": {
     "build": "tsc",
+    "db:seed": "npm run build && node dist/src/scripts/seed.js",
+    "db:setup": "npm run db:seed",
     "start": "node dist/server.js",
     "dev": "tsx watch server.ts",
     "test": "tsx ./node_modules/mocha/bin/mocha.js \"test/**/*.spec.ts\" --exit"
@@ -29,10 +31,15 @@
     "@types/sinon": "^22.0.2",
     "@types/supertest": "^6.0.2",
     "chai": "^5.1.2",
-    "mocha": "^11.0.1",
+    "mocha": "^12.0.3",
     "sinon": "^22.1.0",
     "supertest": "^7.0.0",
     "tsx": "^4.19.2",
     "typescript": "^5.6.3"
+  },
+    "overrides": {
+    "glob": "^14.0.2",
+    "minimatch": "^11.0.1"
   }
 }
+
