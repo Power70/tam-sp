@@ -196,7 +196,7 @@ export default function RichTextEditor({ value, onChange, disabled = false }: Ri
 
       <EditorContent
         editor={editor}
-        className="tiptap-editor w-full min-w-0 text-sm text-gray-700"
+        className="tiptap-editor w-full min-w-0 text-base text-gray-700"
       />
     </div>
   );

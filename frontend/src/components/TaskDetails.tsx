@@ -61,7 +61,7 @@ export default function TaskDetails({
         onClick={onClose}
       />
       <aside
-        className="fixed inset-x-0 bottom-0 z-30 max-h-[90vh] overflow-y-auto rounded-t-3xl bg-white p-6 shadow-2xl sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[min(100%,480px)] sm:rounded-none sm:rounded-l-3xl"
+        className="fixed inset-x-0 bottom-0 z-30 max-h-[92dvh] overflow-y-auto rounded-t-3xl bg-white p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-2xl sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[min(100%,480px)] sm:rounded-none sm:rounded-l-3xl sm:p-8"
         role="dialog"
         aria-modal="true"
         aria-labelledby="task-details-title"
