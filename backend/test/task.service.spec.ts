@@ -64,7 +64,7 @@ describe('Task service', () => {
     });
   });
 
-  it('stores a null description when description is not a string', async () => {
+  it('rejects a non-string description', async () => {
     const create = sinon.stub(repository, 'create').resolves({
       id: 1,
       title: 'Task',
@@ -72,14 +72,8 @@ describe('Task service', () => {
       status: 'pending',
     });
 
-    await createTask({ title: 'Task', description: 42 });
-
-    expect(create.calledOnce).to.equal(true);
-    expect(create.firstCall.args[0]).to.deep.equal({
-      title: 'Task',
-      description: null,
-      status: 'pending',
-    });
+    await expectRejected(createTask({ title: 'Task', description: 42 }), ValidationError);
+    expect(create.called).to.equal(false);
   });
 
   it('rejects an explicitly supplied empty status', async () => {

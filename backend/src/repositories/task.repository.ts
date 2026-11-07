@@ -24,14 +24,19 @@ export async function findPage(
   values.push(pageSize, offset);
   query += ` ORDER BY created_at DESC, id DESC LIMIT $${values.length - 1} OFFSET $${values.length}`;
 
-  const countValues = status ? [status] : [];
-  const [tasksResult, totalResult, countsResult] = await Promise.all([
+  const totalExpression = status ? 'COUNT(*) FILTER (WHERE status = $1)' : 'COUNT(*)';
+  const metadataValues = status ? [status] : [];
+  const [tasksResult, metadataResult] = await Promise.all([
     pool.query(query, values),
     pool.query(
-      `SELECT COUNT(*)::int AS total FROM tasks${status ? ' WHERE status = $1' : ''}`,
-      countValues
+      `SELECT
+         ${totalExpression}::int AS total,
+         COUNT(*) FILTER (WHERE status = 'pending')::int AS pending,
+         COUNT(*) FILTER (WHERE status = 'in_progress')::int AS in_progress,
+         COUNT(*) FILTER (WHERE status = 'completed')::int AS completed
+       FROM tasks`,
+      metadataValues
     ),
-    pool.query(`SELECT status, COUNT(*)::int AS count FROM tasks GROUP BY status`),
   ]);
   const counts = {
     all: 0,
@@ -39,11 +44,12 @@ export async function findPage(
     in_progress: 0,
     completed: 0,
   };
-  for (const row of countsResult.rows as { status: TaskStatus; count: number }[]) {
-    counts[row.status] = row.count;
-    counts.all += row.count;
-  }
-  return { tasks: tasksResult.rows, total: totalResult.rows[0].total, counts };
+  const metadata = metadataResult.rows[0];
+  counts.pending = metadata.pending;
+  counts.in_progress = metadata.in_progress;
+  counts.completed = metadata.completed;
+  counts.all = counts.pending + counts.in_progress + counts.completed;
+  return { tasks: tasksResult.rows, total: metadata.total, counts };
 }
 
 export async function findById(id: number): Promise<Task | null> {

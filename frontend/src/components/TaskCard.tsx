@@ -34,9 +34,10 @@ export default function TaskCard({ task, selected, onSelect }: TaskCardProps) {
           {task.title}
         </span>
         <StatusBadge status={task.status} />
-        <span 
-          className="shrink-0 text-2xl font-light leading-6 text-gray-400" aria-hidden="true">
-        </span>
+        <span
+          className="shrink-0 text-2xl font-light leading-6 text-gray-400"
+          aria-hidden="true"
+        ></span>
       </span>
       {descriptionPreview && (
         <span className="min-w-0 max-w-full line-clamp-2 break-words pr-2 text-sm leading-5 text-gray-600">

@@ -1,6 +1,7 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 export const TASK_STATUSES = ['pending', 'in_progress', 'completed'] as const;
+export const MAX_TITLE_LENGTH = 200;
 export type TaskStatus = (typeof TASK_STATUSES)[number];
 
 export const STATUS_LABELS: Record<TaskStatus, string> = {
@@ -63,39 +64,28 @@ function isTaskCounts(value: unknown): value is TaskPage['counts'] {
 function isTaskPage(value: unknown): value is TaskPage {
   if (!value || typeof value !== 'object') return false;
   const page = value as Partial<TaskPage>;
+  const pagination = page.pagination;
   return (
     Array.isArray(page.tasks) &&
     page.tasks.every(isTask) &&
-    !!page.pagination &&
-    typeof page.pagination.total === 'number' &&
-    typeof page.pagination.totalPages === 'number' &&
+    !!pagination &&
+    Number.isInteger(pagination.page) &&
+    pagination.page > 0 &&
+    Number.isInteger(pagination.pageSize) &&
+    pagination.pageSize > 0 &&
+    Number.isInteger(pagination.total) &&
+    pagination.total >= 0 &&
+    Number.isInteger(pagination.totalPages) &&
+    pagination.totalPages > 0 &&
     isTaskCounts(page.counts)
   );
 }
 
-function normalizeTaskList(value: unknown, page: number, pageSize: number, status?: TaskStatus): TaskPage {
-  if (isTaskPage(value)) return value;
-  if (!Array.isArray(value) || !value.every(isTask)) {
+function parseTaskPage(value: unknown): TaskPage {
+  if (!isTaskPage(value)) {
     throw new Error('The task list response was invalid.');
   }
-
-  const filteredTasks = status ? value.filter((task) => task.status === status) : value;
-  const counts = {
-    all: value.length,
-    pending: value.filter((task) => task.status === 'pending').length,
-    in_progress: value.filter((task) => task.status === 'in_progress').length,
-    completed: value.filter((task) => task.status === 'completed').length,
-  };
-  return {
-    tasks: filteredTasks.slice((page - 1) * pageSize, page * pageSize),
-    pagination: {
-      page,
-      pageSize,
-      total: filteredTasks.length,
-      totalPages: Math.max(1, Math.ceil(filteredTasks.length / pageSize)),
-    },
-    counts,
-  };
+  return value;
 }
 
 export class ApiError extends Error {
@@ -136,16 +126,7 @@ export const taskApi = {
       pageSize: String(pageSize),
     });
     if (status) params.set('status', status);
-    const result = await request<unknown>(`/tasks?${params.toString()}`);
-    if (Array.isArray(result) && status) {
-      const allParams = new URLSearchParams({
-        page: String(page),
-        pageSize: String(pageSize),
-      });
-      const allTasks = await request<unknown>(`/tasks?${allParams.toString()}`);
-      return normalizeTaskList(allTasks, page, pageSize, status);
-    }
-    return normalizeTaskList(result, page, pageSize, status);
+    return parseTaskPage(await request<unknown>(`/tasks?${params.toString()}`));
   },
   create: (task: NewTask) =>
     request<Task>('/tasks', { method: 'POST', body: JSON.stringify(task) }),

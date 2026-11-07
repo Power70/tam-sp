@@ -35,6 +35,9 @@ Set-Location ..\frontend
 npm install
 ```
 
+For a non-default API URL, copy `frontend/.env.example` to `frontend/.env` and set
+`VITE_API_URL`.
+
 Initialize the database and seed the welcome task:
 
 ```powershell

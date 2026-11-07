@@ -1,8 +1,14 @@
-import { useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { X } from 'lucide-react';
-import { STATUS_LABELS, TASK_STATUSES, type NewTask, type TaskStatus } from '../api/taskApi';
-import RichTextEditor from './RichTextEditor';
+import {
+  MAX_TITLE_LENGTH,
+  STATUS_LABELS,
+  TASK_STATUSES,
+  type NewTask,
+  type TaskStatus,
+} from '../api/taskApi';
+const RichTextEditor = lazy(() => import('./RichTextEditor'));
 
 interface TaskFormProps {
   onSubmit: (task: NewTask) => Promise<void>;
@@ -23,6 +29,43 @@ export default function TaskForm({
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<TaskStatus>('pending');
   const [titleError, setTitleError] = useState('');
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!open || !onClose) return;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const dialog = closeRef.current?.closest('[role="dialog"]');
+      if (!dialog) return;
+      const focusable = Array.from(
+        dialog.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), input:not([disabled]), select:not([disabled]), [contenteditable="true"]'
+        )
+      );
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    closeRef.current?.focus();
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      previouslyFocused?.focus();
+    };
+  }, [open, onClose]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
@@ -48,8 +91,8 @@ export default function TaskForm({
   return (
     <div
       className="fixed inset-x-0 bottom-0 top-16 z-30 flex items-start bg-gray-900/50 lg:static lg:block lg:bg-transparent"
-      role="dialog"
-      aria-modal="true"
+      role={onClose ? 'dialog' : undefined}
+      aria-modal={onClose ? true : undefined}
       aria-label="New task"
     >
       <section className="relative h-full max-h-[calc(100dvh-4rem)] w-full overflow-y-auto bg-white p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] lg:sticky lg:top-6 lg:h-auto lg:max-h-none lg:rounded-xl lg:border lg:border-gray-200 lg:p-6">
@@ -59,6 +102,7 @@ export default function TaskForm({
             type="button"
             onClick={onClose}
             aria-label="Close new task form"
+            ref={closeRef}
           >
             <X size={24} strokeWidth={4} aria-hidden="true" />
           </button>
@@ -73,7 +117,7 @@ export default function TaskForm({
               id="task-title"
               className="min-h-12 w-full rounded-lg border border-gray-300 px-3 text-base text-gray-900 placeholder:text-gray-500 disabled:opacity-60"
               value={title}
-              maxLength={150}
+              maxLength={MAX_TITLE_LENGTH}
               onChange={(event) => {
                 setTitle(event.target.value);
                 setTitleError('');
@@ -92,7 +136,9 @@ export default function TaskForm({
 
           <div>
             <span className="mb-1.5 block text-sm font-semibold">Description</span>
-            <RichTextEditor value={description} onChange={setDescription} disabled={submitting} />
+            <Suspense fallback={<div className="min-h-30 animate-pulse rounded-lg bg-gray-50" />}>
+              <RichTextEditor value={description} onChange={setDescription} disabled={submitting} />
+            </Suspense>
           </div>
 
           <div>

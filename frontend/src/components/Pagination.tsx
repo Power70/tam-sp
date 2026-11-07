@@ -19,15 +19,15 @@ export default function Pagination({
   if (totalPages <= 1)
     return (
       <p className="hidden text-[13px] text-gray-600 sm:block">
-         {total ? 1 : 0} of {total} tasks
+        {total ? 1 : 0} of {total} tasks
       </p>
     );
   const start = (page - 1) * pageSize + 1;
-  // const end = Math.min(page * pageSize, total);
+  const end = Math.min(page * pageSize, total);
   return (
     <div className="flex items-center sm:justify-between sm:gap-3">
       <p className="m-0 hidden text-[13px] text-gray-600 sm:block">
-        {start} of {total} tasks
+        {start}-{end} of {total} tasks
       </p>
       <nav
         className="flex w-full items-center justify-between gap-2 text-[13px] text-gray-600 sm:w-auto sm:gap-3"

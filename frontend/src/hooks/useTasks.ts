@@ -87,10 +87,10 @@ export function useTasks(status: TaskStatus | '') {
     try {
       await taskApi.updateStatus(id, nextStatus);
       await refresh();
-    } catch {
+    } catch (requestError) {
       setError({
         scope: 'update',
-        message: 'Could not update the task. Please try again.',
+        message: getErrorMessage(requestError),
         retry: () => void updateStatus(id, nextStatus),
       });
     } finally {

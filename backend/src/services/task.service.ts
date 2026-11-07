@@ -19,6 +19,12 @@ function validateTitle(title: unknown): asserts title is string {
   }
 }
 
+function validateDescription(description: unknown): asserts description is string | undefined {
+  if (description !== undefined && typeof description !== 'string') {
+    throw new ValidationError('Description must be a string.');
+  }
+}
+
 export function validateStatus(status: unknown): asserts status is TaskStatus {
   if (!isTaskStatus(status)) {
     throw new ValidationError(`Status must be one of: ${TASK_STATUSES.join(', ')}.`);
@@ -40,6 +46,7 @@ export async function listTasks(status?: unknown, page = 1, pageSize = 10): Prom
 
 export async function createTask(input: CreateTaskInput = {}): Promise<Task> {
   validateTitle(input.title);
+  validateDescription(input.description);
   let status: TaskStatus = 'pending';
   if ('status' in input) {
     validateStatus(input.status);

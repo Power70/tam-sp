@@ -41,8 +41,27 @@ export default function TaskDetails({
   const description = task.description ? sanitizeDescription(task.description) : '';
 
   useEffect(() => {
+    const previouslyFocused = document.activeElement as HTMLElement | null;
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
+      if (event.key !== 'Tab') return;
+      const dialog = closeRef.current?.closest('[role="dialog"]');
+      if (!dialog) return;
+      const focusable = Array.from(
+        dialog.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), select:not([disabled]), [href], input:not([disabled]), textarea:not([disabled])'
+        )
+      );
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -51,6 +70,7 @@ export default function TaskDetails({
     return () => {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener('keydown', handleKeyDown);
+      previouslyFocused?.focus();
     };
   }, [onClose]);
 
@@ -69,11 +89,7 @@ export default function TaskDetails({
       >
         <div className="mb-6 flex items-center justify-between">
           <button className="text-base text-gray-600" type="button" onClick={onClose}>
-            <span 
-              className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light leading-tight sm:leading-6" 
-              aria-hidden="true">
-              Tasks
-            </span>
+            Back to tasks
           </button>
           <button
             ref={closeRef}
