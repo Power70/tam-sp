@@ -24,8 +24,25 @@ db/schema.sql        PostgreSQL schema and seed data
 
 Requirements: Node.js 20+, PostgreSQL 14+, and npm.
 
-Create a database, copy `backend/.env.example` to `backend/.env`, and set the PostgreSQL
-connection details. Then install dependencies:
+Create a PostgreSQL database and copy the environment templates:
+
+```powershell
+Copy-Item backend\.env.example backend\.env
+Copy-Item frontend\.env.example frontend\.env
+```
+
+Update the values if your local PostgreSQL or API configuration differs. The templates define:
+
+| File | Variable | Purpose |
+| ---- | -------- | ------- |
+| `backend/.env` | `PORT` | API listening port |
+| `backend/.env` | `DATABASE_URL` | PostgreSQL connection string |
+| `backend/.env` | `PGSSL` | Enable PostgreSQL TLS when set to `true` |
+| `backend/.env` | `NODE_ENV` | Runtime environment |
+| `backend/.env` | `FRONTEND_URL` | Allowed frontend origin |
+| `frontend/.env` | `VITE_API_URL` | API base URL, including `/api` |
+
+Install dependencies:
 
 ```powershell
 Set-Location backend
@@ -35,9 +52,6 @@ Set-Location ..\frontend
 npm install
 ```
 
-For a non-default API URL, copy `frontend/.env.example` to `frontend/.env` and set
-`VITE_API_URL`.
-
 Initialize the database and seed the welcome task:
 
 ```powershell
@@ -45,8 +59,35 @@ Set-Location backend
 npm run db:seed
 ```
 
-Start the backend with `npm run dev` and the frontend with `npm run dev` from their respective
-directories.
+Start both applications in separate terminals:
+
+```powershell
+Set-Location backend
+npm run dev
+```
+
+```powershell
+Set-Location frontend
+npm run dev
+```
+
+The frontend is served at `http://localhost:5173` and the API at `http://localhost:3000`.
+
+## Production build
+
+Build both applications before deployment:
+
+```powershell
+Set-Location backend
+npm run build
+
+Set-Location ..\frontend
+npm run build
+```
+
+Run the compiled API with `npm start` from `backend`. Serve the generated `frontend/dist`
+directory from a static web server and configure `VITE_API_URL` to the deployed API base URL
+before building.
 
 ## API
 
@@ -82,8 +123,8 @@ Creates a task:
 }
 ```
 
-The title is required and must be 1-200 characters. Description is optional and status defaults
-to `pending`.
+The title is required and must be 1-200 characters. Description is optional but must be a
+string when provided. Status defaults to `pending`.
 
 ### `PATCH /api/tasks/:id/status`
 
@@ -122,6 +163,23 @@ Frontend scripts:
 | `npm run lint`         | Run ESLint                        |
 | `npm run format:check` | Verify Prettier formatting        |
 
+The frontend build lazy-loads the rich-text editor so its dependencies are not part of the
+initial application entry chunk.
+
+## Testing and CI
+
+Run the backend test suite against a PostgreSQL database:
+
+```powershell
+Set-Location backend
+npm test
+```
+
+The GitHub Actions workflow in `.github/workflows/ci.yml` runs on pushes and pull requests to
+`main` and `develop`. It starts PostgreSQL, applies `db/schema.sql`, then verifies backend build,
+typecheck, lint, formatting, and Mocha tests. A separate frontend job verifies typecheck, lint,
+formatting, and the production build.
+
 ## Architecture
 
 - Controllers handle HTTP concerns only.
@@ -130,3 +188,5 @@ Frontend scripts:
 - Domain types and errors are centralized.
 - HTTP status mapping is handled by the error middleware.
 - The Express app is exported without starting a listener, keeping tests isolated.
+- The frontend uses server-side pagination and status filtering.
+- Rich-text descriptions are sanitized before rendering in task details.
