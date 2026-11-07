@@ -179,6 +179,16 @@ Set-Location backend
 npm test
 ```
 
+### Integration test database behavior
+
+The integration tests reset the `tasks` table before and after the test suite so that every
+test starts with deterministic data. This is intentional for the assessment environment, but
+it is destructive: running the tests clears all tasks in the database configured for the test
+process.
+
+For a production setup, integration tests should use a separate test database rather than the
+development, staging, or production application database.
+
 The GitHub Actions workflow in `.github/workflows/ci.yml` runs on pushes and pull requests to
 `main` and `develop`. It starts PostgreSQL, applies `db/schema.sql`, then verifies backend build,
 typecheck, lint, formatting, and Mocha tests. A separate frontend job verifies typecheck, lint,
