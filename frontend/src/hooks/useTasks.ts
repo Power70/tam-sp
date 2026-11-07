@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { taskApi, type NewTask, type Task, type TaskStatus } from '../api/taskApi';
 
 export const PAGE_SIZE = 10;
@@ -22,24 +22,36 @@ export function useTasks(status: TaskStatus | '') {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<TaskError | null>(null);
+  const requestId = useRef(0);
 
   const refresh = useCallback(async () => {
+    const currentRequestId = ++requestId.current;
     setLoading(true);
     setError(null);
     try {
       const result = await taskApi.list(page, PAGE_SIZE, status || undefined);
+      if (
+        !Array.isArray(result.tasks) ||
+        !result.pagination ||
+        typeof result.pagination.total !== 'number' ||
+        typeof result.pagination.totalPages !== 'number'
+      ) {
+        throw new Error('The task list response was invalid.');
+      }
+      if (currentRequestId !== requestId.current) return;
       setTasks(result.tasks);
       setTotal(result.pagination.total);
       setTotalPages(result.pagination.totalPages);
       setCounts(result.counts);
     } catch (requestError) {
+      if (currentRequestId !== requestId.current) return;
       setError({
         scope: 'load',
         message: getErrorMessage(requestError),
         retry: () => void refresh(),
       });
     } finally {
-      setLoading(false);
+      if (currentRequestId === requestId.current) setLoading(false);
     }
   }, [page, status]);
 
