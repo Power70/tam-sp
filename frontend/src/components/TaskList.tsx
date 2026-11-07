@@ -27,7 +27,7 @@ export default function TaskList({ tasks, loading, selectedId, onSelect }: TaskL
       </div>
     );
   return (
-    <div className="grid gap-3">
+    <div className="grid min-w-0 gap-3">
       {tasks.map((task) => (
         <TaskCard key={task.id} task={task} selected={task.id === selectedId} onSelect={onSelect} />
       ))}

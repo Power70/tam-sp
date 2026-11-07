@@ -18,7 +18,7 @@ export default function StatusFilter({ value, counts, onChange }: StatusFilterPr
 
   return (
     <div
-      className="mb-5 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible [&::-webkit-scrollbar]:hidden"
+      className="mb-5 flex gap-2 overflow-x-auto pb-2 sm:flex-wrap sm:overflow-visible"
       aria-label="Filter tasks by status"
       role="group"
     >

@@ -23,7 +23,7 @@ export default function TaskCard({ task, selected, onSelect }: TaskCardProps) {
   return (
     <button
       type="button"
-      className={`flex w-full min-w-0 flex-col gap-2 rounded-xl border bg-white px-4 py-4 text-left text-gray-900 shadow-sm transition hover:border-gray-300 sm:px-5 ${
+      className={`flex w-full min-w-0 flex-col gap-2 overflow-hidden rounded-xl border bg-white px-4 py-4 text-left text-gray-900 shadow-sm transition hover:border-gray-300 sm:px-5 ${
         selected ? 'border-teal-700 bg-teal-50' : 'border-gray-200'
       }`}
       aria-haspopup="dialog"
@@ -39,7 +39,7 @@ export default function TaskCard({ task, selected, onSelect }: TaskCardProps) {
         </span>
       </span>
       {descriptionPreview && (
-        <span className="line-clamp-2 break-words pr-2 text-sm leading-5 text-gray-600">
+        <span className="min-w-0 max-w-full line-clamp-2 break-words pr-2 text-sm leading-5 text-gray-600">
           {descriptionPreview}
         </span>
       )}

@@ -47,7 +47,7 @@ export default function App() {
           <span className="truncate">Sprout Task Manager</span>
         </div>
         <button
-          className="ml-auto min-h-11 shrink-0 rounded-lg bg-teal-700 px-4 text-base font-semibold text-white shadow-sm sm:hidden"
+          className="ml-auto min-h-11 shrink-0 rounded-lg bg-teal-700 px-4 text-base font-semibold text-white shadow-sm lg:hidden"
           type="button"
           onClick={() => setFormOpen(true)}
         >
@@ -55,7 +55,7 @@ export default function App() {
         </button>
       </header>
       <main className="mx-auto grid w-[calc(100%-2rem)] max-w-7xl gap-6 py-6 sm:w-[calc(100%-4rem)] sm:gap-8 sm:py-8 lg:grid-cols-[minmax(0,1fr)_340px]">
-        <section>
+        <section className="min-w-0">
           <div className="mb-4">
             <h1 className="m-0 text-3xl font-bold leading-9">Tasks</h1>
             <p className="mt-1 text-base leading-6 text-gray-600 sm:text-[17px]">
