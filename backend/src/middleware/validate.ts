@@ -46,10 +46,27 @@ export function validateStatus(req: Request, res: Response, next: NextFunction):
 }
 
 export function validateTaskFilter(req: Request, res: Response, next: NextFunction): void {
-  const { status } = req.query;
+  const { status, page, pageSize } = req.query;
   if (status !== undefined && (Array.isArray(status) || !isTaskStatus(status))) {
     sendValidationError(res, `Status must be one of: ${TASK_STATUSES.join(', ')}.`);
     return;
   }
+  if (!isPositiveInteger(page)) {
+    sendValidationError(res, 'Page must be a positive integer.');
+    return;
+  }
+  if (!isPositiveInteger(pageSize, 100)) {
+    sendValidationError(res, 'Page size must be an integer between 1 and 100.');
+    return;
+  }
   next();
+}
+
+function isPositiveInteger(value: unknown, maximum?: number): boolean {
+  if (value === undefined) return true;
+  return (
+    typeof value === 'string' &&
+    /^[1-9]\d*$/.test(value) &&
+    (maximum === undefined || Number(value) <= maximum)
+  );
 }

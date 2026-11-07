@@ -20,7 +20,6 @@ export default function App() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const {
     tasks,
-    allTasks,
     counts,
     page,
     total,
@@ -32,7 +31,7 @@ export default function App() {
     updateStatus,
     changePage,
   } = useTasks(status);
-  const selectedTask = allTasks.find((task) => task.id === selectedId) ?? null;
+  const selectedTask = tasks.find((task) => task.id === selectedId) ?? null;
   const [toast, setToast] = useState<ToastState | null>(null);
   const closeDetails = useCallback(() => setSelectedId(null), []);
 

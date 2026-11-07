@@ -10,6 +10,15 @@ export interface Task {
   updated_at?: Date;
 }
 
+export interface TaskPage {
+  tasks: Task[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+  counts: Record<TaskStatus | 'all', number>;
+}
+
 export interface CreateTaskInput {
   title?: unknown;
   description?: unknown;

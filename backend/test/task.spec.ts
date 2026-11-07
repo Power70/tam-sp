@@ -8,9 +8,11 @@ describe('Task routes', () => {
   afterEach(() => sinon.restore());
 
   beforeEach(() => {
-    sinon
-      .stub(repository, 'findAll')
-      .resolves([{ id: 1, title: 'Write tests', status: 'pending' }]);
+    sinon.stub(repository, 'findPage').resolves({
+      tasks: [{ id: 1, title: 'Write tests', status: 'pending' }],
+      total: 1,
+      counts: { all: 1, pending: 1, in_progress: 0, completed: 0 },
+    });
     sinon.stub(repository, 'create').callsFake(async (task) => ({
       id: 2,
       ...task,
@@ -24,7 +26,7 @@ describe('Task routes', () => {
   it('lists tasks and passes an optional status filter to the service', async () => {
     const response = await request(app).get('/api/tasks');
     expect(response.status).to.equal(200);
-    expect(response.body).to.have.length(1);
+    expect(response.body.tasks).to.have.length(1);
   });
 
   it('rejects an empty title', async () => {
@@ -115,9 +117,9 @@ describe('Task routes', () => {
   });
 
   it('maps unexpected repository errors to a 500 response', async () => {
-    const findAll = repository.findAll as sinon.SinonStub;
+    const findPage = repository.findPage as sinon.SinonStub;
     const logError = sinon.stub(console, 'error');
-    findAll.rejects(new Error('database unavailable'));
+    findPage.rejects(new Error('database unavailable'));
     const response = await request(app).get('/api/tasks');
     expect(response.status).to.equal(500);
     expect(response.body.error).to.equal('Internal server error.');

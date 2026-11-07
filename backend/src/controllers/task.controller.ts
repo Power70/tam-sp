@@ -3,7 +3,19 @@ import * as service from '../services/task.service';
 
 export async function list(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    res.json(await service.listTasks(req.query.status));
+    const page = Number(req.query.page || 1);
+    const pageSize = Number(req.query.pageSize || 10);
+    const result = await service.listTasks(req.query.status, page, pageSize);
+    res.json({
+      tasks: result.tasks,
+      counts: result.counts,
+      pagination: {
+        page: result.page,
+        pageSize: result.pageSize,
+        total: result.total,
+        totalPages: result.totalPages,
+      },
+    });
   } catch (error) {
     next(error);
   }

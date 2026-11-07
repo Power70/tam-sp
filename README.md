@@ -55,13 +55,17 @@ Returns API and database health.
 
 ### `GET /api/tasks`
 
-Returns tasks ordered by creation time, newest first. An optional status filter is supported:
+Returns one page of tasks ordered by creation time, newest first. Pagination defaults to 10
+tasks per page and supports an optional status filter:
 
 ```text
-GET /api/tasks?status=pending
+GET /api/tasks?status=pending&page=1&pageSize=10
 ```
 
 Supported statuses are `pending`, `in_progress`, and `completed`.
+
+The response contains `tasks`, status `counts`, and `pagination` metadata (`page`, `pageSize`,
+`total`, and `totalPages`). `pageSize` must be between 1 and 100.
 
 ### `POST /api/tasks`
 

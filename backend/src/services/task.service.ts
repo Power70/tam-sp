@@ -1,10 +1,16 @@
 import repository from '../repositories/task.repository';
 import { isTaskStatus, normalizeDescription, TASK_STATUSES } from '../domain/task';
-import type { CreateTaskInput, PersistedTaskInput, Task, TaskStatus } from '../domain/task';
+import type {
+  CreateTaskInput,
+  PersistedTaskInput,
+  Task,
+  TaskPage,
+  TaskStatus,
+} from '../domain/task';
 import { NotFoundError, ValidationError } from '../domain/errors';
 
 export { TASK_STATUSES as STATUSES };
-export type { CreateTaskInput, Task, TaskStatus };
+export type { CreateTaskInput, Task, TaskPage, TaskStatus };
 export { NotFoundError, ValidationError };
 
 function validateTitle(title: unknown): asserts title is string {
@@ -19,11 +25,17 @@ export function validateStatus(status: unknown): asserts status is TaskStatus {
   }
 }
 
-export async function listTasks(status?: unknown): Promise<Task[]> {
+export async function listTasks(status?: unknown, page = 1, pageSize = 10): Promise<TaskPage> {
   if (status !== undefined) {
     validateStatus(status);
   }
-  return repository.findAll(status);
+  const result = await repository.findPage(status, page, pageSize);
+  return {
+    ...result,
+    page,
+    pageSize,
+    totalPages: Math.max(1, Math.ceil(result.total / pageSize)),
+  };
 }
 
 export async function createTask(input: CreateTaskInput = {}): Promise<Task> {

@@ -89,17 +89,25 @@ describe('Task service', () => {
   });
 
   it('validates list filters before querying', async () => {
-    const findAll = sinon.stub(repository, 'findAll').resolves([]);
+    const findPage = sinon.stub(repository, 'findPage').resolves({
+      tasks: [],
+      total: 0,
+      counts: { all: 0, pending: 0, in_progress: 0, completed: 0 },
+    });
     await expectRejected(listTasks('blocked'), ValidationError);
-    expect(findAll.called).to.equal(false);
+    expect(findPage.called).to.equal(false);
   });
 
   it('lists tasks without a filter', async () => {
     const tasks = [{ id: 1, title: 'Task', status: 'pending' as const }];
-    const findAll = sinon.stub(repository, 'findAll').resolves(tasks);
-    expect(await listTasks()).to.equal(tasks);
-    expect(findAll.calledOnce).to.equal(true);
-    expect(findAll.firstCall.args[0]).to.equal(undefined);
+    const findPage = sinon.stub(repository, 'findPage').resolves({
+      tasks,
+      total: 1,
+      counts: { all: 1, pending: 1, in_progress: 0, completed: 0 },
+    });
+    expect((await listTasks()).tasks).to.equal(tasks);
+    expect(findPage.calledOnce).to.equal(true);
+    expect(findPage.firstCall.args).to.deep.equal([undefined, 1, 10]);
   });
 
   it('throws NotFoundError when a status update affects no task', async () => {

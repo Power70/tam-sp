@@ -9,6 +9,9 @@ CREATE TABLE IF NOT EXISTS tasks (
 );
 
 CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks (status);
+CREATE INDEX IF NOT EXISTS idx_tasks_created_at_id ON tasks (created_at DESC, id DESC);
+CREATE INDEX IF NOT EXISTS idx_tasks_status_created_at_id
+  ON tasks (status, created_at DESC, id DESC);
 
 INSERT INTO tasks (title, description, status)
 SELECT 'Welcome to Sprout', 'Create your first task to get started.', 'pending'

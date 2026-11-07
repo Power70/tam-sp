@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { taskApi, type NewTask, type Task, type TaskStatus } from '../api/taskApi';
 
 export const PAGE_SIZE = 10;
@@ -14,8 +14,11 @@ function getErrorMessage(error: unknown): string {
 }
 
 export function useTasks(status: TaskStatus | '') {
-  const [allTasks, setAllTasks] = useState<Task[]>([]);
   const [page, setPage] = useState(1);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [counts, setCounts] = useState({ all: 0, pending: 0, in_progress: 0, completed: 0 });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<TaskError | null>(null);
@@ -24,7 +27,11 @@ export function useTasks(status: TaskStatus | '') {
     setLoading(true);
     setError(null);
     try {
-      setAllTasks(await taskApi.list());
+      const result = await taskApi.list(page, PAGE_SIZE, status || undefined);
+      setTasks(result.tasks);
+      setTotal(result.pagination.total);
+      setTotalPages(result.pagination.totalPages);
+      setCounts(result.counts);
     } catch (requestError) {
       setError({
         scope: 'load',
@@ -34,27 +41,11 @@ export function useTasks(status: TaskStatus | '') {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [page, status]);
 
   useEffect(() => {
     void refresh();
   }, [refresh]);
-
-  const filteredTasks = useMemo(
-    () => (status ? allTasks.filter((task) => task.status === status) : allTasks),
-    [allTasks, status]
-  );
-  const totalPages = Math.max(1, Math.ceil(filteredTasks.length / PAGE_SIZE));
-  const tasks = filteredTasks.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-  const counts = useMemo(
-    () => ({
-      all: allTasks.length,
-      pending: allTasks.filter((task) => task.status === 'pending').length,
-      in_progress: allTasks.filter((task) => task.status === 'in_progress').length,
-      completed: allTasks.filter((task) => task.status === 'completed').length,
-    }),
-    [allTasks]
-  );
 
   useEffect(() => {
     if (page > totalPages) setPage(totalPages);
@@ -64,8 +55,8 @@ export function useTasks(status: TaskStatus | '') {
     setSaving(true);
     setError(null);
     try {
-      const created = await taskApi.create(task);
-      setAllTasks((current) => [created, ...current]);
+      await taskApi.create(task);
+      await refresh();
     } catch (requestError) {
       setError({
         scope: 'create',
@@ -82,8 +73,8 @@ export function useTasks(status: TaskStatus | '') {
     setSaving(true);
     setError(null);
     try {
-      const updated = await taskApi.updateStatus(id, nextStatus);
-      setAllTasks((current) => current.map((task) => (task.id === id ? updated : task)));
+      await taskApi.updateStatus(id, nextStatus);
+      await refresh();
     } catch {
       setError({
         scope: 'update',
@@ -102,10 +93,9 @@ export function useTasks(status: TaskStatus | '') {
 
   return {
     tasks,
-    allTasks,
     counts,
     page,
-    total: filteredTasks.length,
+    total,
     totalPages,
     loading,
     saving,
