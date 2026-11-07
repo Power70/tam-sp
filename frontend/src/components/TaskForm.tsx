@@ -6,6 +6,7 @@ import RichTextEditor from './RichTextEditor';
 
 interface TaskFormProps {
   onSubmit: (task: NewTask) => Promise<void>;
+  onSuccess?: () => void;
   submitting?: boolean;
   open?: boolean;
   onClose?: () => void;
@@ -13,6 +14,7 @@ interface TaskFormProps {
 
 export default function TaskForm({
   onSubmit,
+  onSuccess,
   submitting = false,
   open = true,
   onClose,
@@ -21,8 +23,6 @@ export default function TaskForm({
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<TaskStatus>('pending');
   const [titleError, setTitleError] = useState('');
-  const [formError, setFormError] = useState('');
-  const [success, setSuccess] = useState('');
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
@@ -31,17 +31,15 @@ export default function TaskForm({
       return;
     }
     setTitleError('');
-    setFormError('');
     try {
       await onSubmit({ title: title.trim(), description, status });
       setTitle('');
       setDescription('');
       setStatus('pending');
-      setSuccess('Task created successfully.');
-      window.setTimeout(() => setSuccess(''), 3000);
+      onSuccess?.();
       onClose?.();
-    } catch (error) {
-      setFormError(error instanceof Error ? error.message : 'Could not create the task.');
+    } catch {
+      // The parent displays submission errors in the header toast.
     }
   }
 
@@ -62,7 +60,7 @@ export default function TaskForm({
             onClick={onClose}
             aria-label="Close new task form"
           >
-            <X size={18} strokeWidth={2} aria-hidden="true" />
+            <X size={24} strokeWidth={4} aria-hidden="true" />
           </button>
         </div>
         <h2 className="m-0 mb-5 text-lg font-semibold">New task</h2>
@@ -116,12 +114,6 @@ export default function TaskForm({
             </select>
           </div>
 
-          {formError && <p className="m-0 text-xs text-red-700">{formError}</p>}
-          {success && (
-            <p className="m-0 text-xs text-green-700" role="status">
-              {success}
-            </p>
-          )}
           <button
             className="min-h-12 rounded-lg bg-teal-700 text-base font-semibold text-white hover:bg-teal-800 disabled:cursor-wait disabled:opacity-60"
             type="submit"

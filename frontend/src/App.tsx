@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { PAGE_SIZE, useTasks } from './hooks/useTasks';
 import { type TaskStatus } from './api/taskApi';
 import ErrorBanner from './components/ErrorBanner';
@@ -7,6 +7,12 @@ import StatusFilter from './components/StatusFilter';
 import TaskDetails from './components/TaskDetails';
 import TaskForm from './components/TaskForm';
 import TaskList from './components/TaskList';
+import Toast from './components/Toast';
+
+interface ToastState {
+  message: string;
+  type: 'error' | 'success';
+}
 
 export default function App() {
   const [status, setStatus] = useState<TaskStatus | ''>('');
@@ -27,7 +33,19 @@ export default function App() {
     changePage,
   } = useTasks(status);
   const selectedTask = allTasks.find((task) => task.id === selectedId) ?? null;
+  const [toast, setToast] = useState<ToastState | null>(null);
   const closeDetails = useCallback(() => setSelectedId(null), []);
+
+  useEffect(() => {
+    if (!error) return;
+    setToast({ message: error.message, type: 'error' });
+  }, [error]);
+
+  useEffect(() => {
+    if (!toast) return;
+    const timeout = window.setTimeout(() => setToast(null), 3000);
+    return () => window.clearTimeout(timeout);
+  }, [toast]);
 
   function changeFilter(nextStatus: TaskStatus | ''): void {
     setStatus(nextStatus);
@@ -53,6 +71,11 @@ export default function App() {
         >
           Create task
         </button>
+        {toast && (
+          <div className="pointer-events-none absolute inset-x-4 top-[calc(100%+0.75rem)] flex justify-center sm:inset-x-8">
+            <Toast message={toast.message} type={toast.type} />
+          </div>
+        )}
       </header>
       <main className="mx-auto grid w-[calc(100%-2rem)] max-w-7xl gap-6 py-6 sm:w-[calc(100%-4rem)] sm:gap-8 sm:py-8 lg:grid-cols-[minmax(0,1fr)_340px]">
         <section className="min-w-0">
@@ -79,12 +102,17 @@ export default function App() {
           />
         </section>
         <aside className="hidden lg:block">
-          <TaskForm onSubmit={addTask} submitting={saving} />
+          <TaskForm
+            onSubmit={addTask}
+            onSuccess={() => setToast({ message: 'Task created successfully.', type: 'success' })}
+            submitting={saving}
+          />
         </aside>
       </main>
       <div className="lg:hidden">
         <TaskForm
           onSubmit={addTask}
+          onSuccess={() => setToast({ message: 'Task created successfully.', type: 'success' })}
           submitting={saving}
           open={formOpen}
           onClose={() => setFormOpen(false)}
