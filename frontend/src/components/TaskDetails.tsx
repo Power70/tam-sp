@@ -56,12 +56,12 @@ export default function TaskDetails({
   return (
     <>
       <button
-        className="fixed inset-0 z-20 cursor-default bg-gray-900/50"
+        className="fixed inset-x-0 bottom-0 top-16 z-20 cursor-default bg-gray-900/50"
         aria-label="Close task details"
         onClick={onClose}
       />
       <aside
-        className="fixed inset-x-0 bottom-0 z-30 max-h-[92dvh] overflow-y-auto rounded-t-3xl bg-white p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-2xl sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[min(100%,480px)] sm:rounded-none sm:rounded-l-3xl sm:p-8"
+        className="fixed inset-x-0 bottom-0 top-16 z-30 flex min-h-0 flex-col overflow-hidden rounded-t-3xl bg-white p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-2xl sm:left-auto sm:right-0 sm:w-[min(100%,480px)] sm:rounded-none sm:rounded-l-3xl sm:p-8"
         role="dialog"
         aria-modal="true"
         aria-labelledby="task-details-title"
@@ -112,19 +112,21 @@ export default function TaskDetails({
         <p className="mt-2 text-sm text-gray-500">
           {updating ? 'Saving…' : 'Changes are saved automatically.'}
         </p>
-        <section className="mt-8 border-t border-gray-200 pt-6">
-          <h3 className="mb-3 text-lg font-semibold">Description</h3>
-          {description ? (
-            <div
-              className="task-description text-base leading-7 text-gray-600"
-              dangerouslySetInnerHTML={{ __html: description }}
-            />
-          ) : (
-            <p className="text-base text-gray-500">No description provided.</p>
-          )}
+        <section className="mt-8 flex min-h-0 flex-1 flex-col border-t border-gray-200 pt-6">
+          <h3 className="mb-3 shrink-0 text-lg font-semibold">Description</h3>
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            {description ? (
+              <div
+                className="task-description text-base leading-7 text-gray-600"
+                dangerouslySetInnerHTML={{ __html: description }}
+              />
+            ) : (
+              <p className="text-base text-gray-500">No description provided.</p>
+            )}
+          </div>
         </section>
         <button
-          className="mt-8 min-h-12 w-full rounded-lg border border-gray-300 bg-white text-base font-semibold"
+          className="mt-8 min-h-12 w-full shrink-0 rounded-lg border border-gray-300 bg-white text-base font-semibold"
           type="button"
           onClick={onClose}
         >

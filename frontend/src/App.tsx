@@ -36,7 +36,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#f6f7f9]">
-      <header className="flex min-h-16 items-center gap-3 border-b border-gray-200 bg-white px-4 sm:px-8">
+      <header className="sticky top-0 z-40 flex min-h-16 items-center gap-3 border-b border-gray-200 bg-white px-4 sm:px-8">
         <div className="flex min-w-0 items-center gap-2 text-[17px] font-bold leading-6 sm:text-lg">
           <span
             className="grid size-8 place-items-center rounded-lg bg-teal-700 text-white"
@@ -46,9 +46,6 @@ export default function App() {
           </span>
           <span className="truncate">Sprout Task Manager</span>
         </div>
-        <span className="ml-auto hidden text-sm text-gray-500 sm:block">
-          {allTasks.length} tasks
-        </span>
         <button
           className="ml-auto min-h-11 shrink-0 rounded-lg bg-teal-700 px-4 text-base font-semibold text-white shadow-sm sm:hidden"
           type="button"

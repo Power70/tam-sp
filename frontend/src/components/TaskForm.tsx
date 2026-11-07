@@ -49,12 +49,12 @@ export default function TaskForm({
 
   return (
     <div
-      className="fixed inset-0 z-10 flex items-end bg-gray-900/50 lg:static lg:block lg:bg-transparent"
+      className="fixed inset-x-0 bottom-0 top-16 z-30 flex items-end bg-gray-900/50 lg:static lg:block lg:bg-transparent"
       role="dialog"
       aria-modal="true"
       aria-label="New task"
     >
-      <section className="relative max-h-[92dvh] w-full overflow-y-auto rounded-t-2xl bg-white p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] lg:sticky lg:top-6 lg:max-h-none lg:rounded-xl lg:border lg:border-gray-200 lg:p-6">
+      <section className="relative max-h-[calc(100dvh-4rem)] w-full overflow-y-auto rounded-t-2xl bg-white p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] lg:sticky lg:top-6 lg:max-h-none lg:rounded-xl lg:border lg:border-gray-200 lg:p-6">
         <div className="mb-1 flex justify-end lg:hidden">
           <button
             className="flex size-11 items-center justify-center text-gray-700"
