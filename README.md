@@ -20,11 +20,11 @@ frontend/            React and Vite application
 db/schema.sql        PostgreSQL schema and seed data
 ```
 
-## Local setup
-
 Requirements: Node.js 20+, PostgreSQL 14+, and npm.
 
-Create a PostgreSQL database and copy the environment templates:
+## How to configure environment variables
+
+Copy the environment templates:
 
 ```powershell
 Copy-Item backend\.env.example backend\.env
@@ -42,7 +42,7 @@ Update the values if your local PostgreSQL or API configuration differs. The tem
 | `backend/.env` | `FRONTEND_URL` | Allowed frontend origin |
 | `frontend/.env` | `VITE_API_URL` | API base URL, including `/api` |
 
-Install dependencies:
+## How to install dependencies
 
 ```powershell
 Set-Location backend
@@ -52,12 +52,16 @@ Set-Location ..\frontend
 npm install
 ```
 
+## How to set up the database
+
 Initialize the database and seed the welcome task:
 
 ```powershell
 Set-Location backend
 npm run db:seed
 ```
+
+## How to run the backend and frontend applications
 
 Start both applications in separate terminals:
 
@@ -166,7 +170,7 @@ Frontend scripts:
 The frontend build lazy-loads the rich-text editor so its dependencies are not part of the
 initial application entry chunk.
 
-## Testing and CI
+## How to execute the automated tests
 
 Run the backend test suite against a PostgreSQL database:
 
