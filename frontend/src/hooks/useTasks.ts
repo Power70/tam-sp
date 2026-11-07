@@ -22,6 +22,7 @@ export function useTasks(status: TaskStatus | '') {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<TaskError | null>(null);
+  // Ignore stale responses when filters or pages change quickly.
   const requestId = useRef(0);
 
   const refresh = useCallback(async () => {

@@ -1,6 +1,7 @@
 import { pool } from '../config/db';
 import type { PersistedTaskInput, Task, TaskStatus } from '../domain/task';
 
+// Keep PostgreSQL access isolated from business rules.
 const columns = 'id, title, description, status, created_at, updated_at';
 
 export interface TaskPageResult {

@@ -5,6 +5,7 @@ import taskRoutes from './routes/task.routes';
 import { checkDatabaseHealth } from './config/db';
 import errorHandler from './middleware/errorHandler';
 
+// Compose HTTP middleware and routes without starting the listener.
 const app = express();
 app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:5173' }));
 app.use(express.json({ limit: '100kb' }));

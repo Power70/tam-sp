@@ -7,6 +7,7 @@ on:
     branches: [main, develop]
 
 jobs:
+  # Backend and frontend quality gates run independently.
   backend-tests:
     runs-on: ubuntu-latest
 

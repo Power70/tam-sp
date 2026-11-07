@@ -1,5 +1,6 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
+// Keep task status and response validation consistent across the UI.
 export const TASK_STATUSES = ['pending', 'in_progress', 'completed'] as const;
 export const MAX_TITLE_LENGTH = 200;
 export type TaskStatus = (typeof TASK_STATUSES)[number];
