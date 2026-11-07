@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { X } from 'lucide-react';
 import DOMPurify from 'dompurify';
 import { STATUS_LABELS, TASK_STATUSES, type Task, type TaskStatus } from '../api/taskApi';
 import type { TaskError } from '../hooks/useTasks';
@@ -61,16 +62,19 @@ export default function TaskDetails({
         onClick={onClose}
       />
       <aside
-        className="fixed inset-x-0 bottom-0 top-16 z-30 flex min-h-0 flex-col overflow-hidden rounded-t-3xl bg-white p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-2xl sm:left-auto sm:right-0 sm:w-[min(100%,480px)] sm:rounded-none sm:rounded-l-3xl sm:p-8"
+        className="fixed inset-x-0 bottom-0 top-16 z-30 flex min-h-0 flex-col overflow-hidden bg-white p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-2xl sm:left-auto sm:right-0 sm:w-[min(100%,480px)] sm:p-8"
         role="dialog"
         aria-modal="true"
         aria-labelledby="task-details-title"
       >
         <div className="mb-6 flex items-center justify-between">
           <button className="text-base text-gray-600" type="button" onClick={onClose}>
-            ‹ Tasks
+            <span 
+              className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light leading-tight sm:leading-6" 
+              aria-hidden="true">
+              Tasks
+            </span>
           </button>
-          <span className="text-sm font-semibold text-gray-500">Task details</span>
           <button
             ref={closeRef}
             className="text-3xl leading-none text-gray-600"
@@ -78,7 +82,7 @@ export default function TaskDetails({
             aria-label="Close"
             onClick={onClose}
           >
-            ×
+            <X size={24} strokeWidth={4} aria-hidden="true" />
           </button>
         </div>
         {error && <ErrorBanner message={error.message} onRetry={error.retry} />}
